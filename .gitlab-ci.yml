@@ -1,0 +1,53 @@
+stages:          
+  - pull
+  - replace_env
+  - deploy
+
+
+pull_code:
+  stage: pull
+  image: ruby:2.5
+  before_script:
+  - apt-get update -qq
+  - apt-get install -qq git
+  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY_PROD")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh $ALIAS@$IP_PROD "cd ~/bot_n && git pull https://$ALIAS:$DEPLOY_TOKEN@gitlab.com/flawlessmlm/zendo2/core/stuff/bots/slackbot.git &&  exit"
+  tags:
+    - zendo_docker
+
+replace_env:
+  stage: replace_env
+  image: ruby:2.5
+  before_script:
+  - apt-get update -qq
+  - apt-get install -qq git
+  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY_PROD")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh $ALIAS@$IP_PROD "cd ~/bot_n && sed -i 's/SLACK_SIGNING_SECRET = .*/SLACK_SIGNING_SECRET = $SLACK_SIGNING_SECRET /g' .env && sed -i 's/SLACK_APP_TOKEN = .*/SLACK_APP_TOKEN = $SLACK_APP_TOKEN /g' .env && sed -i 's/SLACK_BOT_TOKEN = .*/SLACK_BOT_TOKEN = $SLACK_BOT_TOKEN /g' .env && sed -i 's/SLACK_PORT = .*/SLACK_PORT = $SLACK_PORT /g' .env && sed -i 's/SLACK_USER_TOKEN = .*/SLACK_USER_TOKEN = $SLACK_USER_TOKEN /g' .env  && exit"
+  tags:
+    - zendo_docker
+
+deploy_code:
+  stage: deploy
+  image: ruby:2.5
+  before_script:
+  - apt-get update -qq
+  - apt-get install -qq git
+  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY_PROD")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh $ALIAS@$IP_PROD "cd ~/bot_n && docker-compose build && docker-compose up -d && exit"
+  tags:
+    - zendo_docker
