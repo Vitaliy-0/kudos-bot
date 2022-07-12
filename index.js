@@ -893,7 +893,7 @@ async function trigger() {
         const User = mongoose.model('User', userSchema);
         const usersInDB = await User.find();
         const filtered = usersInDB.filter(user => {
-            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3 || user.id === 'U03M978VADQ' || user.id === 'U03MBKLMAFN') {
+            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3) {
                 return false;
             }
             return true;
@@ -919,4 +919,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger()
-}, 600000)
+}, 600000);
