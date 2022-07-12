@@ -28,13 +28,9 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     console.log('Slack app started!')
 })();
 
-async function connect() {
-    return mongoose.createConnection(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
-}
-
 (async function main() {
     try {
-        await connect();
+        await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
         console.log('connected to mongodb');
     } catch (err) {
         console.error(err)
@@ -897,7 +893,7 @@ async function trigger() {
         const User = mongoose.model('User', userSchema);
         const usersInDB = await User.find();
         const filtered = usersInDB.filter(user => {
-            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3) {
+            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3 || user.id === 'U03M978VADQ' || user.id === 'U03MBKLMAFN') {
                 return false;
             }
             return true;
@@ -923,4 +919,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger()
-}, 600000);
+}, 600000)
