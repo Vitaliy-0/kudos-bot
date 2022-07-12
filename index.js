@@ -28,9 +28,13 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     console.log('Slack app started!')
 })();
 
+async function connect() {
+    return mongoose.createConnection(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
+}
+
 (async function main() {
     try {
-        await mongoose.connect('mongodb://localhost:27017/Slack');
+        await connect();
         console.log('connected to mongodb');
     } catch (err) {
         console.error(err)
