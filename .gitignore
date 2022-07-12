@@ -1,3 +1,7 @@
 node_modules
 .env
 .gitlab-ci.yml
+docker/
+Dockerfile
+docker-compose.yml
+.dockerignore
