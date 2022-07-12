@@ -48,6 +48,6 @@ deploy_code:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh $ALIAS@$IP_PROD "cd ~/bot_mod && docker-compose build && docker-compose up -d && exit"
+    - ssh $ALIAS@$IP_PROD "cd ~/bot_mod && docker-compose -f docker-compose.yml up --build -d node && exit"
   tags:
     - zendo_docker
