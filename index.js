@@ -84,7 +84,7 @@ app.event('app_home_opened', async ({ client, event, body }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Общий рейтинг по Kudas за этот месяц",
+                                    "text": "Рейтинг по всем Kudas",
                                     "emoji": true
                                 },
                                 "value": event.user,
@@ -221,7 +221,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "type": "button",
                                     "text": {
                                         "type": "plain_text",
-                                        "text": "Общий рейтинг по Kudas за этот месяц",
+                                        "text": "Рейтинг по всем Kudas",
                                         "emoji": true
                                     },
                                     "value": action.value,
@@ -377,7 +377,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Общий рейтинг по Kudas за этот месяц",
+                                    "text": "Рейтинг по всем Kudas",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -556,7 +556,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Общий рейтинг по Kudas за этот месяц",
+                                    "text": "Рейтинг по всем Kudas",
                                     "emoji": true
                                 },
                                 "value": action.value,
