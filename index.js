@@ -37,7 +37,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     }
 })();
 
-app.event('app_home_opened', async ({ client, event, body }) => {
+app.event('app_home_opened', async ({ client, event }) => {
     try {
         const date = new Date();
         const year = date.getFullYear();
@@ -892,24 +892,26 @@ async function trigger() {
         const User = mongoose.model('User', userSchema);
         const usersInDB = await User.find();
         const filtered = usersInDB.filter(user => {
-            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3 || user.id === 'U03M978VADQ' || user.id === 'U03MBKLMAFN') {
+            const reactionsCount = user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day];
+            if (reactionsCount === 3) {
                 return false;
             }
             return true;
         });
 
         filtered.forEach(async (user) => {
-            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] < 3) {
+            const reactionsCount = user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day];
+            if (reactionsCount < 3) {
                 await app.client.chat.postMessage({
                     channel: user.id,
                     user: user.id,
-                    text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                    text: `У тебя осталось ${reactionsLimit - reactionsCount} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                 });
             } else {
                 await app.client.chat.postMessage({
                     channel: user.id,
                     user: user.id,
-                    text: `У тебя осталось ${user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] ? reactionsLimit - user.reactions_added[year][month][day] : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                    text: `У тебя осталось ${reactionsCount ? reactionsLimit - reactionsCount : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                 });
             }
         });
@@ -918,4 +920,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger()
-}, 600000)
+}, 1000 * 60 * 10)
