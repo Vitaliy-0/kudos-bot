@@ -513,7 +513,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                     ...description,
                     {
                         type: "divider"
-                    },
+                    }, 
                     {
                         "type": "actions",
                         "elements": [
