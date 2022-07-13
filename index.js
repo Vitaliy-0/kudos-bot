@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose';
 import pkg from '@slack/bolt';
-import { getUsers, transformEmodji, transformDataFromDB, monthes, transformDatesToBlocks, getReactionsCount, kudos, description, filterUsers } from './utils.js';
+import { getUsers, transformEmodji, transformDataFromDB, monthes, transformDatesToBlocks, getReactionsCount, kudos, description } from './utils.js';
 import { userSchema } from './schemas/User.js';
 dotenv.config();
 
@@ -889,45 +889,33 @@ async function trigger() {
         notification = {
             day
         }
+        const User = mongoose.model('User', userSchema);
+        const usersInDB = await User.find();
+        const filtered = usersInDB.filter(user => {
+            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] === 3 || user.id === 'U03M978VADQ' || user.id === 'U03MBKLMAFN') {
+                return false;
+            }
+            return true;
+        });
 
-        try {
-            const users = await app.client.users.list();
-            const filteredUsers = filterUsers(users.members);
-
-            const User = mongoose.model('User', userSchema);
-            const usersInDB = await User.find();
-
-            filteredUsers.map(async (item) => {
-                const user = usersInDB.find(el => el.id === item.id);
-
-                if (user) {
-                    if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] < 3) {
-                        await app.client.chat.postMessage({
-                            channel: user.id,
-                            user: user.id,
-                            text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                        });
-                    } else {
-                        await app.client.chat.postMessage({
-                            channel: user.id,
-                            user: user.id,
-                            text: `У тебя осталось ${user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] ? reactionsLimit - user.reactions_added[year][month][day] : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                        });
-                    }
-                } else {
-                    await app.client.chat.postMessage({
-                        channel: item.id,
-                        user: item.id,
-                        text: `У тебя осталось 3 не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                    });
-                }
-            });
-        } catch (e) {
-            console.error(e)
-        }
+        filtered.forEach(async (user) => {
+            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] < 3) {
+                await app.client.chat.postMessage({
+                    channel: user.id,
+                    user: user.id,
+                    text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                });
+            } else {
+                await app.client.chat.postMessage({
+                    channel: user.id,
+                    user: user.id,
+                    text: `У тебя осталось ${user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] ? reactionsLimit - user.reactions_added[year][month][day] : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                });
+            }
+        });
     }
 }
 
 setInterval(() => {
     trigger()
-}, 1000 * 60 * 60 * 10);
+}, 600000)
