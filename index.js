@@ -489,6 +489,36 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
         const blocks = transformDataFromDB(usersInDB, false, year, month);
         const userData = transformDataFromDB([userInDB], false, year, month, usersInDB);
 
+        const shownInfo = blocks.fields.length ? [
+            blocks,
+            {
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Ваше место в рейтинге"
+                }
+            },
+            userData.fields.length ? userData : {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
+                    "emoji": true
+                }
+            }
+        ] : [
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudas, чтобы начать!)",
+                    "emoji": true
+                }
+            }];
+
         await client.views.publish({
             user_id: action.value,
             view: {
@@ -608,32 +638,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                             emoji: true
                         }
                     },
-                    blocks.fields.length ? blocks : {
-                        "type": "section",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
-                            "emoji": true
-                        }
-                    },
-                    {
-                        "type": "divider"
-                    },
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Ваше место в рейтинге"
-                        }
-                    },
-                    userData.fields.length ? userData : {
-                        "type": "section",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
-                            "emoji": true
-                        }
-                    }
+                    ...shownInfo
                 ]
             }
         })
