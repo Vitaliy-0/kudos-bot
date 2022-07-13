@@ -42,7 +42,7 @@ app.event('app_home_opened', async ({ client, event, body }) => {
         const date = new Date();
         const year = date.getFullYear();
         const month = monthes[date.getMonth()];
-
+        
         const emodji = transformEmodji(kudos);
 
         const User = mongoose.model('User', userSchema);
@@ -909,7 +909,7 @@ async function trigger() {
                 await app.client.chat.postMessage({
                     channel: user.id,
                     user: user.id,
-                    text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                    text: `У тебя осталось ${user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] ? reactionsLimit - user.reactions_added[year][month][day] : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                 });
             }
         });
