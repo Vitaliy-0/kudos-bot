@@ -69,7 +69,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudos, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
@@ -84,7 +84,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudas",
+                                    "text": "Рейтинг по всем Kudos",
                                     "emoji": true
                                 },
                                 "value": event.user,
@@ -103,7 +103,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                                 "type": "static_select",
                                 "placeholder": {
                                     "type": "plain_text",
-                                    "text": "Выберите kudas",
+                                    "text": "Выберите kudos",
                                     "emoji": true
                                 },
                                 "options": emodji,
@@ -206,7 +206,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                             "type": "section",
                             "text": {
                                 "type": "plain_text",
-                                "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
+                                "text": `Количество оставшихся Kudos, которые ты можешь отправить сегодня: ${count}`,
                                 "emoji": true
                             }
                         },
@@ -221,7 +221,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "type": "button",
                                     "text": {
                                         "type": "plain_text",
-                                        "text": "Рейтинг по всем Kudas",
+                                        "text": "Рейтинг по всем Kudos",
                                         "emoji": true
                                     },
                                     "value": action.value,
@@ -240,7 +240,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "type": "static_select",
                                     "placeholder": {
                                         "type": "plain_text",
-                                        "text": "Выберите kudas",
+                                        "text": "Выберите kudos",
                                         "emoji": true
                                     },
                                     "options": emodji,
@@ -340,7 +340,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                 "type": "section",
                 "text": {
                     "type": "plain_text",
-                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudas, чтобы начать!)",
+                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudos, чтобы начать!)",
                     "emoji": true
                 }
             }];
@@ -362,7 +362,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudos, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
@@ -377,7 +377,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudas",
+                                    "text": "Рейтинг по всем Kudos",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -396,7 +396,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "type": "static_select",
                                 "placeholder": {
                                     "type": "plain_text",
-                                    "text": "Выберите kudas",
+                                    "text": "Выберите kudos",
                                     "emoji": true
                                 },
                                 "options": emodji,
@@ -519,7 +519,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                 "type": "section",
                 "text": {
                     "type": "plain_text",
-                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudas, чтобы начать!)",
+                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudos, чтобы начать!)",
                     "emoji": true
                 }
             }];
@@ -541,7 +541,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudos, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
@@ -556,7 +556,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudas",
+                                    "text": "Рейтинг по всем Kudos",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -575,7 +575,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                                 "type": "static_select",
                                 "placeholder": {
                                     "type": "plain_text",
-                                    "text": "Выберите kudas",
+                                    "text": "Выберите kudos",
                                     "emoji": true
                                 },
                                 "options": emodji,
@@ -710,7 +710,7 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
                             "type": "static_select",
                             "placeholder": {
                                 "type": "plain_text",
-                                "text": "Выберите kudas",
+                                "text": "Выберите kudos",
                                 "emoji": true
                             },
                             "options": emoji,
@@ -718,7 +718,7 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
                         },
                         "label": {
                             "type": "plain_text",
-                            "text": "Kudas",
+                            "text": "Kudos",
                             "emoji": true
                         }
                     },
@@ -809,7 +809,7 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
                 await client.chat.postEphemeral({
                     user: body.user.id,
                     channel: reactionChannel ? shortcut_channel : body.user.id,
-                    text: 'Похоже, вы уже отправили 3 Kudas за сегодня. Следующие Kudas можно будет отправить только завтра :wink:'
+                    text: 'Похоже, вы уже отправили 3 Kudos за сегодня. Следующие Kudos можно будет отправить только завтра :wink:'
                 })
                 return;
             }
@@ -864,7 +864,7 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
         await client.chat.postEphemeral({
             user: body.user.id,
             channel: reactionChannel ? shortcut_channel : body.user.id,
-            text: num > 0 ? `:raised_hands: Kudas успешно отправлен, спасибо за поддержку! Кол-во оставшихся Kudos на сегодня - ${num}` : `:raised_hands: Kudas успешно отправлен, спасибо за поддержку! Сегодня вы разослали все имеющиеся Kudas, отличная работа! :white_check_mark:`
+            text: num > 0 ? `:raised_hands: Kudos успешно отправлен, спасибо за поддержку! Кол-во оставшихся Kudos на сегодня - ${num}` : `:raised_hands: Kudos успешно отправлен, спасибо за поддержку! Сегодня вы разослали все имеющиеся Kudos, отличная работа! :white_check_mark:`
         });
         await client.chat.postMessage({
             user: user_for_nomination,
@@ -901,19 +901,11 @@ async function trigger() {
 
         filtered.forEach(async (user) => {
             const reactionsCount = user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day];
-            if (reactionsCount < 3) {
-                await app.client.chat.postMessage({
-                    channel: user.id,
-                    user: user.id,
-                    text: `У тебя осталось ${reactionsLimit - reactionsCount} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                });
-            } else {
-                await app.client.chat.postMessage({
-                    channel: user.id,
-                    user: user.id,
-                    text: `У тебя осталось ${reactionsCount ? reactionsLimit - reactionsCount : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                });
-            }
+            await app.client.chat.postMessage({
+                channel: user.id,
+                user: user.id,
+                text: `У тебя осталось ${reactionsCount ? reactionsLimit - reactionsCount : 3} не отправленных Kudos за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+            });
         });
     }
 }
