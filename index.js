@@ -61,22 +61,19 @@ app.event('app_home_opened', async ({ client, event, body }) => {
                         "type": "header",
                         "text": {
                             "type": "plain_text",
-                            "text": "Добро пожаловать в Flawless Team bot :tada:",
+                            "text": "Flawless Team bot :tada:",
                             "emoji": true
                         }
-                    },
-                    {
-                        type: "divider"
                     },
                     {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": count === 0 ? 'Сегодня вы уже отправили 3 Kudos. Заходите завтра!)' : `Количество оставшихся Kudas на сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
-                    description,
+                    ...description,
                     {
                         type: "divider"
                     },
@@ -87,7 +84,7 @@ app.event('app_home_opened', async ({ client, event, body }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по Kudas за этот месяц",
+                                    "text": "Общий рейтинг по Kudas за этот месяц",
                                     "emoji": true
                                 },
                                 "value": event.user,
@@ -155,7 +152,7 @@ app.event('app_home_opened', async ({ client, event, body }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Получить информацию",
+                                    "text": "Посмотреть рейтинг",
                                     "emoji": true
                                 },
                                 "value": event.user,
@@ -200,22 +197,20 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                             "type": "header",
                             "text": {
                                 "type": "plain_text",
-                                "text": "Добро пожаловать в Flawless Team bot :tada:",
+                                "text": "Flawless Team bot :tada:",
                                 "emoji": true
                             }
                         },
-                        {
-                            type: "divider"
-                        },
+
                         {
                             "type": "section",
                             "text": {
                                 "type": "plain_text",
-                                "text": count === 0 ? 'Сегодня вы уже отправили 3 Kudos. Заходите завтра!)' : `Количество оставшихся Kudas на сегодня: ${count}`,
+                                "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
                                 "emoji": true
                             }
                         },
-                        description,
+                        ...description,
                         {
                             type: "divider"
                         },
@@ -226,7 +221,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "type": "button",
                                     "text": {
                                         "type": "plain_text",
-                                        "text": "Рейтинг по Kudas за этот месяц",
+                                        "text": "Общий рейтинг по Kudas за этот месяц",
                                         "emoji": true
                                     },
                                     "value": action.value,
@@ -294,7 +289,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "type": "button",
                                     "text": {
                                         "type": "plain_text",
-                                        "text": "Получить информацию",
+                                        "text": "Посмотреть рейтинг",
                                         "emoji": true
                                     },
                                     "value": action.value,
@@ -329,22 +324,19 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         "type": "header",
                         "text": {
                             "type": "plain_text",
-                            "text": "Добро пожаловать в Flawless Team bot :tada:",
+                            "text": "Flawless Team bot :tada:",
                             "emoji": true
                         }
-                    },
-                    {
-                        type: "divider"
                     },
                     {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": count === 0 ? 'Сегодня вы уже отправили 3 Kudos. Заходите завтра!)' : `Количество оставшихся Kudas на сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
-                    description,
+                    ...description,
                     {
                         type: "divider"
                     },
@@ -355,7 +347,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по Kudas за этот месяц",
+                                    "text": "Общий рейтинг по Kudas за этот месяц",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -423,7 +415,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Получить информацию",
+                                    "text": "Посмотреть рейтинг",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -438,14 +430,14 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Топ 5"
+                            "text": "ТОП 5"
                         }
                     },
                     blocks.fields.length ? blocks : {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Нет данных...",
+                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
                             "emoji": true
                         }
                     },
@@ -456,14 +448,14 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Ваша информация"
+                            "text": "Ваше место в рейтинге"
                         }
                     },
                     userData.fields.length ? userData : {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Нет данных...",
+                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
                             "emoji": true
                         }
                     }
@@ -506,22 +498,19 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         "type": "header",
                         "text": {
                             "type": "plain_text",
-                            "text": "Добро пожаловать в Flawless Team bot :tada:",
+                            "text": "Flawless Team bot :tada:",
                             "emoji": true
                         }
-                    },
-                    {
-                        type: "divider"
                     },
                     {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": count === 0 ? 'Сегодня вы уже отправили 3 Kudos. Заходите завтра!)' : `Количество оставшихся Kudas на сегодня: ${count}`,
+                            "text": `Количество оставшихся Kudas, которые ты можешь отправить сегодня: ${count}`,
                             "emoji": true
                         }
                     },
-                    description,
+                    ...description,
                     {
                         type: "divider"
                     },
@@ -532,7 +521,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Рейтинг по Kudas за этот месяц",
+                                    "text": "Общий рейтинг по Kudas за этот месяц",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -600,7 +589,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                                 "type": "button",
                                 "text": {
                                     "type": "plain_text",
-                                    "text": "Получить информацию",
+                                    "text": "Посмотреть рейтинг",
                                     "emoji": true
                                 },
                                 "value": action.value,
@@ -615,7 +604,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Топ 5",
+                            "text": "ТОП 5",
                             emoji: true
                         }
                     },
@@ -623,7 +612,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Нет данных...",
+                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
                             "emoji": true
                         }
                     },
@@ -634,14 +623,14 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Ваша информация"
+                            "text": "Ваше место в рейтинге"
                         }
                     },
                     userData.fields.length ? userData : {
                         "type": "section",
                         "text": {
                             "type": "plain_text",
-                            "text": "Нет данных...",
+                            "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
                             "emoji": true
                         }
                     }
@@ -810,7 +799,7 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
                 await client.chat.postEphemeral({
                     user: body.user.id,
                     channel: reactionChannel ? shortcut_channel : body.user.id,
-                    text: 'К сожалению, на сегодня вы исчерпали количество комлиментов и это не засчитывается... :face_with_head_bandage:'
+                    text: 'Похоже, вы уже отправили 3 Kudas за сегодня. Следующие Kudas можно будет отправить только завтра :wink:'
                 })
                 return;
             }
@@ -865,13 +854,13 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
         await client.chat.postEphemeral({
             user: body.user.id,
             channel: reactionChannel ? shortcut_channel : body.user.id,
-            text: num > 0 ? `Ваш комплимент успешно добавлен, на сегодня у вас осталось - ${num} :tada:` : `Ваш комплимент успешно добавлен, на сегодня у Вас больше не осталось... :face_with_head_bandage:`
+            text: num > 0 ? `:raised_hands: Kudas успешно отправлен, спасибо за поддержку! Кол-во оставшихся Kudos на сегодня - ${num}` : `:raised_hands: Kudas успешно отправлен, спасибо за поддержку! Сегодня вы разослали все имеющиеся Kudas, отличная работа! :white_check_mark:`
         });
         await client.chat.postMessage({
             user: user_for_nomination,
             channel: user_for_nomination,
-            text: `🏅 Поздравляем! Вы получили Kudos "${emoji.text.text}" от <@${eventUserInfo.name}>
-${comment}`
+            text: comment ? `:sports_medal: Поздравляем! Вы получили Kudos "${emoji.text.text}" от <@${eventUserInfo.name}>. Комментарий:
+_${comment}_` : `:sports_medal: Поздравляем! Вы получили Kudos "${emoji.text.text}" от <@${eventUserInfo.name}>.`
         })
     } catch (e) {
         console.error(e)
@@ -900,17 +889,17 @@ async function trigger() {
         });
 
         filtered.forEach(async (user) => {
-            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day]) {
+            if (user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day] < 3) {
                 await app.client.chat.postMessage({
                     channel: user.id,
                     user: user.id,
-                    text: `Сегодня у Вас осталось ${reactionsLimit - user.reactions_added[year][month][day]} комплиментов, поспешите кого-то наградить :tada:`
+                    text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                 });
             } else {
                 await app.client.chat.postMessage({
                     channel: user.id,
                     user: user.id,
-                    text: `Сегодня вы ещё никого не награждали комплиментами, поспешите :tada:`
+                    text: `У тебя осталось ${reactionsLimit - user.reactions_added[year][month][day]} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                 });
             }
         });

@@ -57,15 +57,14 @@ export const transformDataFromDB = (data, reaction, year, month, usersInDB) => {
                 if (usersInDB) {
                     userIndex = prepareData(usersInDB, year, month, true).findIndex(user => user.id === data[0]?.id) + 1
                 }
-
                 arr.push({
                     "type": "plain_text",
-                    "text": `${usersInDB ? userIndex : idx + 1}. Всего - ${sum}        ${Object.keys(user.reactions[year][month]).map(reaction => `:${reaction}: - ${user.reactions[year][month][reaction]}`).join('  ')}`,
+                    "text": `${usersInDB ? userIndex : idx + 1}. ${user.name} (<@${user.username}>)`,
                     "emoji": true
                 });
                 arr.push({
                     "type": "plain_text",
-                    "text": `${user.name} (<@${user.username}>)`,
+                    "text": `Всего - ${sum}        ${Object.keys(user.reactions[year][month]).map(reaction => `:${reaction}: - ${user.reactions[year][month][reaction]}`).join('  ')}`,
                     "emoji": true
                 });
             });
@@ -88,14 +87,15 @@ export const transformDataFromDB = (data, reaction, year, month, usersInDB) => {
 
                 arr.push({
                     "type": "plain_text",
-                    "text": `${usersInDB ? index : idx + 1}. :${reaction}: ${kudos[reaction]} - ${user.reactions[year][month][reaction]}`,
+                    "text": `${usersInDB ? index : idx + 1}. ${user.name} (<@${user.username}>)`,
                     emoji: true
                 });
                 arr.push({
                     "type": "plain_text",
-                    "text": `${user.name} (<@${user.username}>)`,
+                    "text": `:${reaction}: ${kudos[reaction]} - ${user.reactions[year][month][reaction]}`,
                     emoji: true
                 });
+
             });
         return obj
     }
@@ -123,24 +123,58 @@ export const getReactionsCount = (userInDB, reactionsLimit) => {
     }
 }
 
-export const description = {
-    "type": "section",
-    "text": {
-        "type": "plain_text",
-        "text": `Каждый день мы работаем над запуском новых проектов, улучшаем существующие и закрываем десятки задач!
-Однако, в потоке рабочей рутины очень важно не упускать позитив и поддерживать друг друга :подмигивание:
-Kudos в переводе с английского - похвала, слава, благодарность.
-Этот бот нужен, чтобы делиться Kudos со своими коллегами и не забывать отмечать успехи друг друга.
-Есть 6 ключевых ценностей компании, которые стоит особо внимательно отслеживать друг в друге:
-    • Качественный продукт
-    • Клиентоориентированность
-    • Генератор идей
-    • Инициативность
-    • Скорость
-    • Взаимопомощь
-Чтобы отправить Kudos коллеге и сделать ему/ей приятно - просто нажмите на кнопку рядом с любым его сообщением "Другие действия(три точки) > Отправить Kudos".
-Однако учтите, что в день вы можете отправить не больше 3 Kudas.⭐
-Кстати, самому себе Kudas тоже отправить нельзя :upside_down_face:`,
-        "emoji": true
+export const description = [
+    {
+        "type": "section",
+        "text": {
+            "type": "plain_text",
+            "text": `Каждый день мы работаем над запуском новых проектов, улучшаем существующие и закрываем десятки задач!
+Однако, в потоке рабочей рутины очень важно не упускать позитив и поддерживать друг друга :wink:`,
+            "emoji": true
+        }
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": `Kudos в переводе с английского - *слава, почет, респект*.
+Этот бот нужен для того, чтобы делиться *Kudos* со своими коллегами и не забывать отмечать успехи друг друга. Простое "Молодец" или "Отличная работа" может зарядить энергией на весь день! Так давайте делиться этой энергией друг с другом!)`
+        }
+    },
+    {
+        type: "section",
+        text: {
+            type: 'mrkdwn',
+            text: `Есть 6 ключевых ценностей компании, по которым можно отправить *Kudos*:
+:star-struck:  Качественный продукт
+:hugging_face:  Клиентоориентированность
+:bulb:  Генератор идей
+:gem:  Инициативность
+:rocket:  Скорость
+:handshake:  Взаимопомощь`
+        }
+    },
+    {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: `Чтобы отправить Kudos коллеге - просто нажми на кнопку рядом с любым его/ее сообщением: "Другие действия(три точки) > Отправить Kudos".
+Помни, что в день можно отправить *не больше 3 Kudas*. Кстати, самому себе Kudas тоже отправить нельзя :upside_down_face:`
+        }
+    },
+    {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: `Общий рейтинг по всем набранным Kudos можно посмотреть в статистике ниже. Сотрудники, набравшие наибольшее количество Kudos по каждой из шести категорий, по итогам месяца вознаграждаются приятными ценными подарками в виде футболок, сумок, рюкзаков и других плюшек с айдентикой Flawless Group!)
+<https://www.figma.com/file/f0vq7CGrU0XAaN8T5XhBe1/flawless_brandbook?node-id=67%3A563|Взгляни здесь>, как может выглядеть наш корпоративный мерч :relaxed:`
+        }
+    },
+    {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: ':trophy: Желаем каждому побывать на первом месте!)'
+        }
     }
-};
+];
