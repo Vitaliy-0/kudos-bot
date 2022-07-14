@@ -924,18 +924,3 @@ async function trigger() {
         }
     }
 }
-
-setInterval(() => {
-    const date = new Date();
-    const hours = date.getHours();
-    const year = date.getFullYear();
-    const month = monthes[date.getMonth()];
-    const day = date.getDate();
-
-    console.log(hours,year,month,day);
-}, 1000 * 10);
-
-setTimeout(() => {
-    const users = await app.client.users.list();
-    console.log(users.members.map(us => us.real_name))
-}, 1000)
