@@ -180,5 +180,5 @@ export const description = [
 ];
 
 export const filterUsers = (users) => {
-    return users.filter(user => !user.is_bot && user.name !== 'slackbot')
+    return users.filter(user => !user.is_bot && user.name !== 'slackbot' && user.id !== 'U03M978VADQ' && user.id !== 'U03MBKLMAFN')
 }
