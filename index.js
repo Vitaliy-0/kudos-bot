@@ -32,6 +32,9 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     try {
         await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
         console.log('connected to mongodb');
+        setInterval(() => {
+            trigger();
+        }, 1000 * 60 * 5);
     } catch (err) {
         console.error(err)
     }
@@ -923,5 +926,16 @@ async function trigger() {
 }
 
 setInterval(() => {
-    trigger();
-}, 600000)
+    const date = new Date();
+    const hours = date.getHours();
+    const year = date.getFullYear();
+    const month = monthes[date.getMonth()];
+    const day = date.getDate();
+
+    console.log(hours,year,month,day);
+}, 1000 * 10);
+
+setTimeout(() => {
+    const users = await app.client.users.list();
+    console.log(users.members.map(us => us.real_name))
+}, 1000)
