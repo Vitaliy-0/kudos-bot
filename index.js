@@ -32,6 +32,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     try {
         await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
         console.log('connected to mongodb');
+        trigger();
     } catch (err) {
         console.error(err)
     }
@@ -880,48 +881,46 @@ _${comment}_` : `:sports_medal: Поздравляем! Вы получили Ku
 async function trigger() {
     const date = new Date();
 
-    const hours = date.getUTCHours();
+    const hours = date.getHours();
     const year = date.getFullYear();
     const month = monthes[date.getMonth()];
     const day = date.getDate();
 
+    notification = {
+        today: day
+    }
+
+    try {
+        const users = await app.client.users.list();
+        const filteredUsers = filterUsers(users.members);
+
+        const User = mongoose.model('User', userSchema);
+        const usersInDB = await User.find();
+
+        filteredUsers.map(async (item) => {
+            const user = usersInDB.find(el => el.id === item.id);
+
+            if (user) {
+                const reactionAddedCount = user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day];
+                if (reactionAddedCount === 3) return;
+                await app.client.chat.postMessage({
+                    channel: user.id,
+                    user: user.id,
+                    text: `У тебя осталось ${reactionAddedCount ? reactionsLimit - reactionAddedCount : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                });
+            } else {
+                await app.client.chat.postMessage({
+                    channel: item.id,
+                    user: item.id,
+                    text: `У тебя осталось 3 не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                });
+            }
+        });
+    } catch (e) {
+        console.error(e)
+    }
+
     if (hours === 16 && notification?.today !== day) {
-        notification = {
-            today: day
-        }
 
-        try {
-            const users = await app.client.users.list();
-            const filteredUsers = filterUsers(users.members);
-
-            const User = mongoose.model('User', userSchema);
-            const usersInDB = await User.find();
-
-            filteredUsers.map(async (item) => {
-                const user = usersInDB.find(el => el.id === item.id);
-
-                if (user) {
-                    const reactionAddedCount = user.reactions_added && user.reactions_added[year] && user.reactions_added[year][month] && user.reactions_added[year][month][day];
-                    if (reactionAddedCount === 3) return;
-                    await app.client.chat.postMessage({
-                        channel: user.id,
-                        user: user.id,
-                        text: `У тебя осталось ${reactionAddedCount ? reactionsLimit - reactionAddedCount : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                    });
-                } else {
-                    await app.client.chat.postMessage({
-                        channel: item.id,
-                        user: item.id,
-                        text: `У тебя осталось 3 не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
-                    });
-                }
-            });
-        } catch (e) {
-            console.error(e)
-        }
     }
 }
-
-setInterval(() => {
-    trigger()
-}, 1000 * 60 * 5);
