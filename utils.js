@@ -167,7 +167,7 @@ export const description = [
         text: {
             type: 'mrkdwn',
             text: `Общий рейтинг по всем набранным Kudos можно посмотреть в статистике ниже. Сотрудники, набравшие наибольшее количество Kudos по каждой из шести категорий, по итогам месяца вознаграждаются приятными ценными подарками в виде футболок, сумок, рюкзаков и других плюшек с айдентикой Flawless Group!)
-<https://www.figma.com/file/f0vq7CGrU0XAaN8T5XhBe1/flawless_brandbook?node-id=67%3A563|Взгляни здесь>, как может выглядеть наш корпоративный мерч :relaxed:`
+<https://www.figma.com/proto/uPoJQeA9MZXfsgniYsRkfN/flawless_brandbook-(Копия)?node-id=114%3A548&scaling=scale-down-width&page-id=67%3A563|Взгляни здесь>, как может выглядеть наш корпоративный мерч :relaxed:`
         }
     },
     {
