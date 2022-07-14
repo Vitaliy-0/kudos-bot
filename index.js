@@ -25,7 +25,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
 
 (async () => {
     await app.start({ port: '8080' });
-    console.log('Slack app started!')
+    console.log('Slack app started!');
 })();
 
 (async function main() {
@@ -880,14 +880,14 @@ _${comment}_` : `:sports_medal: Поздравляем! Вы получили Ku
 async function trigger() {
     const date = new Date();
 
-    const hours = date.getHours();
+    const hours = date.getUTCHours();
     const year = date.getFullYear();
     const month = monthes[date.getMonth()];
     const day = date.getDate();
 
-    if (hours === 16 && notification?.day !== day) {
+    if (hours === 16 && notification?.today !== day) {
         notification = {
-            day
+            today: day
         }
 
         try {
@@ -924,4 +924,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger()
-}, 1000 * 60 * 10)
+}, 1000 * 60 * 5);
