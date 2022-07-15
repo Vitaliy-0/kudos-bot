@@ -15,8 +15,6 @@ const app = new App({
 
 const reactionsLimit = 3;
 const years = [];
-let shortcut_channel = '';
-let user_for_nomination = '';
 let notification = {};
 
 for (let i = 2022; i <= new Date().getFullYear(); i++) {
@@ -685,6 +683,7 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
         await client.views.open({
             trigger_id: body.trigger_id,
             view: {
+                "external_id": `${shortcut.message.user} ${shortcut.channel.id}`,
                 "callback_id": "shortcut_compliment_callback",
                 "type": "modal",
                 "title": {
@@ -742,9 +741,6 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
                 ]
             }
         });
-
-        shortcut_channel = shortcut.channel.id;
-        user_for_nomination = shortcut.message.user;
     } catch (e) {
         console.error(e)
     }
@@ -753,6 +749,10 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
 app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) => {
     try {
         await ack();
+
+        const user_for_nomination = payload.external_id && payload.external_id?.split(' ')[0];
+        const shortcut_channel = payload.external_id && payload.external_id?.split(' ')[1];
+
         const users = await getUsers(app);
         const date = new Date();
         const emoji = payload.state.values['compliments_select_in_modal']['static_select-action']['selected_option'];
