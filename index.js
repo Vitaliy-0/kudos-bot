@@ -32,6 +32,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
     try {
         await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
         console.log('connected to mongodb');
+        trigger()
     } catch (err) {
         console.error(err)
     }
@@ -922,7 +923,3 @@ async function trigger() {
         }
     }
 }
-
-setInterval(() => {
-    trigger();
-}, 1000 * 60 * 5);
