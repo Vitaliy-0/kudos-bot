@@ -5,3 +5,4 @@ docker/
 Dockerfile
 docker-compose.yml
 .dockerignore
+Makefile
