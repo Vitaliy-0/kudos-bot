@@ -485,7 +485,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
 
         const selectedYear = body.view.state.values['select_action']['compliment_year_select']['selected_option'] || year;
         const selectedMonth = body.view.state.values['select_action']['compliment_month_select']['selected_option'] || month;
-        console.log('generate')
+
         const User = mongoose.model('User', userSchema);
         const usersInDB = await User.find();
         const userInDB = await User.findOne({ id: action.value });
@@ -493,7 +493,7 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
 
         const blocks = transformDataFromDB(usersInDB, false, year, month);
         const userData = transformDataFromDB([userInDB], false, year, month, usersInDB);
-        console.log(userInDB)
+
         const shownInfo = blocks.fields.length ? [
             blocks,
             {
@@ -884,8 +884,9 @@ async function trigger() {
     const year = date.getFullYear();
     const month = monthes[date.getMonth()];
     const day = date.getDate();
+    const dayNumber = date.getDay();
 
-    if (hours === 16 && notification?.today !== day) {
+    if (hours === 16 && notification?.today !== day && dayNumber !== 6 && dayNumber !== 0) {
         notification = {
             today: day
         }
@@ -924,4 +925,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger();
-}, 1000 * 60 * 10);
+}, 1000 * 60 * 5);
