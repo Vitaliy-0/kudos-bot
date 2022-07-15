@@ -24,7 +24,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
 }
 
 (async () => {
-    await app.start({ port: '8080' });
+    await app.start({ port: process.env.PORT || '8080' });
     console.log('Slack app started!');
 })();
 
@@ -924,4 +924,4 @@ async function trigger() {
 
 setInterval(() => {
     trigger();
-}, 1000 * 60 * 5);
+}, 1000 * 60 * 10);
