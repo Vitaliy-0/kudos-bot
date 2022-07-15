@@ -16,7 +16,7 @@ pull_code:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh $ALIAS@$IP_PROD "cd ~/bot_mod && git pull https://$ALIAS:$DEPLOY_TOKEN@gitlab.com/flawlessmlm/zendo2/core/stuff/bots/slackbot_moderator.git &&  exit"
+    - ssh $ALIAS@$IP_PROD "cd ~/bot2 && git pull https://$ALIAS:$DEPLOY_TOKEN@gitlab.com/flawlessmlm/zendo2/core/stuff/bots/slackbot_moderator.git &&  exit"
   tags:
     - zendo_docker
 
@@ -32,7 +32,7 @@ replace_env:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh $ALIAS@$IP_PROD "cd ~/bot_mod && sed -i 's/SIGNING_SECRET = .*/SIGNING_SECRET = $SIGNING_SECRET /g' .env && sed -i 's/APP_TOKEN = .*/APP_TOKEN = $APP_TOKEN /g' .env && sed -i 's/BOT_TOKEN = .*/BOT_TOKEN = $BOT_TOKEN /g' .env && sed -i 's/PORT = .*/PORT = $PORT /g' .env && sed -i 's/USER_TOKEN = .*/USER_TOKEN = $USER_TOKEN /g' .env  && exit"
+    - ssh $ALIAS@$IP_PROD "cd ~/bot2 && sed -i 's/SIGNING_SECRET = .*/SIGNING_SECRET = $SIGNING_SECRET /g' .env && sed -i 's/APP_TOKEN = .*/APP_TOKEN = $APP_TOKEN /g' .env && sed -i 's/BOT_TOKEN = .*/BOT_TOKEN = $BOT_TOKEN /g' .env && sed -i 's/PORT = .*/PORT = $PORT /g' .env && sed -i 's/USER_TOKEN = .*/USER_TOKEN = $USER_TOKEN /g' .env  && exit"
   tags:
     - zendo_docker
 
@@ -48,6 +48,6 @@ deploy_code:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh $ALIAS@$IP_PROD "cd ~/bot_mod && docker-compose -f docker-compose.yml up --build -d node && exit"
+    - ssh $ALIAS@$IP_PROD "cd ~/bot2 && docker-compose -f docker-compose.yml up --build -d node && exit"
   tags:
     - zendo_docker
