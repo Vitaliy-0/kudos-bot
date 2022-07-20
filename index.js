@@ -678,12 +678,14 @@ app.shortcut('compliment_added', async ({ ack, shortcut, client, body }) => {
     try {
         await ack();
 
+        const random = Math.floor(Math.random() * 10000);
+
         const emoji = transformEmodji(kudos);
 
         await client.views.open({
             trigger_id: body.trigger_id,
             view: {
-                "external_id": `${shortcut.message.user} ${shortcut.channel.id}`,
+                "external_id": `${shortcut.message.user} ${shortcut.channel.id} ${random}`,
                 "callback_id": "shortcut_compliment_callback",
                 "type": "modal",
                 "title": {
@@ -913,7 +915,7 @@ async function trigger() {
                     await app.client.chat.postMessage({
                         channel: item.id,
                         user: item.id,
-                        text: `У тебя осталось 3 не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                        text: `У тебя осталось 3 не отправленных Kudos за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                     });
                 }
             });
