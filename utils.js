@@ -377,7 +377,7 @@ export const getInfoAboutUser = (user, usersList, year, month, admin) => {
         }]
     }
 
-    if (user.reactions && user.reactions[year] && user.reactions[year][month]) {
+    if (user.reactions && user?.reactions[year] && user?.reactions[year][month]) {
         const arr = [{
             type: 'section',
             fields: []
@@ -394,8 +394,11 @@ export const getInfoAboutUser = (user, usersList, year, month, admin) => {
             })
             .forEach((key) => {
                 count++;
-                const userByKey = usersList.find(us => us.id === key);
-                if (userByKey.id === 'U03N4J0P12S') {
+                const userByKey = usersList.find(us => us?.id === key);
+                if (!userByKey) {
+                    return;
+                }
+                if (userByKey?.id === 'U03N4J0P12S') {
                     count--;
                     return;
                 }
