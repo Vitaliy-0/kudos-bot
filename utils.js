@@ -20,11 +20,11 @@ const prepareData = (data, year, month, notSliced) => {
 
     return data.filter(user => user && user?.reactions && user?.reactions[year] && user?.reactions[year][month])
         .sort((user1, user2) => {
-        const sum1 = check1 && Object.keys(user1.reactions[year][month]).reduce((acc, userId) => {
+        const sum1 = user1 && Object.keys(user1.reactions[year][month]).reduce((acc, userId) => {
             acc += getSum(user1.reactions[year][month][userId]) 
             return acc;
-        }, 0) || 0;
-        const sum2 = check2 && Object.keys(user2.reactions[year][month]).reduce((acc, userId) => {
+        }, 0);
+        const sum2 = user2 && Object.keys(user2.reactions[year][month]).reduce((acc, userId) => {
             acc += getSum(user2.reactions[year][month][userId]);
             return acc;
         }, 0) || 0;
@@ -86,7 +86,7 @@ export const transformEmodji = (data) => {
     }))
 }
 
-export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, notSlice = false, usersFromClient) => {
+export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, notSlice = false) => {
     if (!reaction) {
         let userIndex = 0;
         const arr = [{
@@ -95,7 +95,7 @@ export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, not
         }];
         let count = 0;
 
-        prepareData(data, year, month, notSlice, usersFromClient)
+        prepareData(data, year, month, notSlice)
             .map((user, idx) => {
                 const sum = getReactionsSum(user, year, month);
                 const temp = user && user?.reactions && user?.reactions[year] && user?.reactions[year][month];
