@@ -825,8 +825,9 @@ app.action('get_user_info', async ({ ack, body, client }) => {
         const adminBlocks = getAdminBlock(admin.is_admin);
         const count = getReactionsCount(userInDB, reactionsLimit);
 
-        const data = getInfoAboutUser(userInDB, usersList.members, selectedYear?.value || selectedYear, selectedMonth?.value || selectedMonth, admin.is_admin)
-        const kudosCount = () => {
+        const data = getInfoAboutUser(userInDB, usersList.members, selectedYear?.value || selectedYear, selectedMonth?.value || selectedMonth, admin.is_admin);
+
+        const kudosCount1 = () => {
             if (userInDB && userInDB?.reactions && userInDB.reactions[selectedYear?.value || selectedYear] && userInDB.reactions[selectedYear?.value || selectedYear][selectedMonth?.value || selectedMonth]) {
                 return Object.keys(userInDB.reactions[selectedYear?.value || selectedYear][selectedMonth?.value || selectedMonth])
                     .reduce((acc, key) => {
@@ -978,7 +979,7 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                         type: 'section',
                         text: {
                             type: 'plain_text',
-                            text: `Всего kudos: ${kudosCount()}`
+                            text: `Всего kudos: ${kudosCount1()}`
                         }
                     } : {
                         type: 'divider'
