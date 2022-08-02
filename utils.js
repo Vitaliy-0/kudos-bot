@@ -394,8 +394,9 @@ export const getInfoAboutUser = (user, usersList, year, month, admin) => {
             })
             .forEach((key) => {
                 count++;
-                const userByKey = usersList.find(us => us?.id === key);
+                const userByKey = usersList.find(item => String(item?.id) === String(key));
                 if (!userByKey) {
+                    count --;
                     return;
                 }
                 if (userByKey?.id === 'U03N4J0P12S') {
