@@ -27,7 +27,7 @@ const prepareData = (data, year, month, notSliced) => {
         const sum2 = user2 && Object.keys(user2.reactions[year][month]).reduce((acc, userId) => {
             acc += getSum(user2.reactions[year][month][userId]);
             return acc;
-        }, 0) || 0;
+        }, 0);
         return sum2 - sum1;
     }).slice(0, notSliced ? 1000 : 5)
 }
