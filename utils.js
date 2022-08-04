@@ -48,11 +48,11 @@ const prepareDataWithReaction = (data, reaction, year, month, notSliced) => {
     })
     .sort((user1, user2) => {
         const sum1 = user1 && Object.keys(user1.reactions[year][month]).reduce((acc, userId) => {
-            acc += user1.reactions[year][month][userId][reaction]
+            acc += user1.reactions[year][month][userId][reaction] || 0
             return acc;
         }, 0)
         const sum2 = user2 && Object.keys(user2.reactions[year][month]).reduce((acc, userId) => {
-            acc += user2.reactions[year][month][userId][reaction]
+            acc += user2.reactions[year][month][userId][reaction] || 0
             return acc;
         }, 0)
         return sum2 - sum1;
