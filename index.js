@@ -1264,7 +1264,7 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
             await client.chat[reactionChannel ? 'postEphemeral' : 'postMessage']({
                 user: body.user.id,
                 channel: reactionChannel ? shortcut_channel : body.user.id,
-                text: 'Вы уже отправляли Kudos сегодня данному пользователю :)'
+                text: 'Вы уже отправляли Kudos сегодня данному пользователю :slightly_smiling_face:'
             });
             return;
         }
