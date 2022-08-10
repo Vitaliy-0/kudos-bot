@@ -1260,6 +1260,15 @@ app.view('shortcut_compliment_callback', async ({ ack, client, payload, body }) 
         const eventUser = await User.findOne({ id: body.user.id });
         const eventUserInfo = users.find(item => item.id === body.user.id);
 
+        if (eventUser && eventUser?.reactions_added && eventUser?.reactions_added[year] && eventUser?.reactions_added[year][month] && eventUser?.reactions_added[year][month][day] && eventUser?.reactions_added[year][month][day][user.id]) {
+            await client.chat[reactionChannel ? 'postEphemeral' : 'postMessage']({
+                user: body.user.id,
+                channel: reactionChannel ? shortcut_channel : body.user.id,
+                text: 'Вы уже отправляли Kudos сегодня данному пользователю :)'
+            });
+            return;
+        }
+
         if (!eventUser) {
             const newUser = new User({
                 id: eventUserInfo.id,
@@ -1398,7 +1407,7 @@ async function trigger() {
                     await app.client.chat.postMessage({
                         channel: user.id,
                         user: user.id,
-                        text: `У тебя осталось ${reactionAddedCount ? reactionsLimit - reactionAddedCount : 3} не отправленных Kudas за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
+                        text: `У тебя осталось ${reactionAddedCount ? reactionsLimit - reactionAddedCount : 3} не отправленных Kudos за сегодня! Успей порадовать коллег - отправь Kudos прямо сейчас! :tada:`
                     });
                 } else {
                     await app.client.chat.postMessage({
