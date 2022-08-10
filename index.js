@@ -94,42 +94,11 @@ app.event('app_home_opened', async ({ client, event }) => {
                         type: "divider"
                     },
                     {
-                        "type": "actions",
-                        "elements": isAdmin.user.is_admin ? [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": event.user,
-                                "action_id": "generate_report"
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            }
-                        ] : [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": event.user,
-                                "action_id": "generate_report"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "divider"
+                        type: 'section',
+                        text: {
+                            type: 'plain_text',
+                            text: 'Рейтинг по Kudos'
+                        }
                     },
                     {
                         "block_id": "select_action",
@@ -183,7 +152,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                     },
                     {
                         "type": "actions",
-                        "elements": [
+                        "elements": isAdmin.user.is_admin ? [
                             {
                                 "type": "button",
                                 "text": {
@@ -193,8 +162,26 @@ app.event('app_home_opened', async ({ client, event }) => {
                                 },
                                 "value": event.user,
                                 "action_id": "actionId-0"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Отправленные kudos",
+                                    "emoji": true
+                                },
+                                "action_id": "sended_kudos"
                             }
-                        ]
+                        ] : [{
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Посмотреть рейтинг",
+                                "emoji": true
+                            },
+                            "value": event.user,
+                            "action_id": "actionId-0"
+                        }]
                     },
                     ...adminBlocks
                 ]
@@ -255,42 +242,11 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                             type: "divider"
                         },
                         {
-                            "type": "actions",
-                            "elements": user.is_admin ? [
-                                {
-                                    "type": "button",
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "Рейтинг по всем Kudos",
-                                        "emoji": true
-                                    },
-                                    "value": action.value,
-                                    "action_id": "generate_report"
-                                },
-                                {
-                                    "type": "button",
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "Отправленные kudos",
-                                        "emoji": true
-                                    },
-                                    "action_id": "sended_kudos"
-                                }
-                            ] : [
-                                {
-                                    "type": "button",
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "Рейтинг по всем Kudos",
-                                        "emoji": true
-                                    },
-                                    "value": action.value,
-                                    "action_id": "generate_report"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "divider"
+                            type: 'section',
+                            text: {
+                                type: 'plain_text',
+                                text: 'Рейтинг по Kudos'
+                            }
                         },
                         {
                             "block_id": "select_action",
@@ -344,7 +300,27 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         },
                         {
                             "type": "actions",
-                            "elements": [
+                            "elements": user.is_admin ? [
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Посмотреть рейтинг",
+                                        "emoji": true
+                                    },
+                                    "value": action.value,
+                                    "action_id": "actionId-0"
+                                },
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Отправленные kudos",
+                                        "emoji": true
+                                    },
+                                    "action_id": "sended_kudos"
+                                }
+                            ] : [
                                 {
                                     "type": "button",
                                     "text": {
@@ -432,42 +408,11 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                         type: "divider"
                     },
                     {
-                        "type": "actions",
-                        "elements": user.is_admin ? [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "generate_report"
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            }
-                        ] : [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "generate_report"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "divider"
+                        type: 'section',
+                        text: {
+                            type: 'plain_text',
+                            text: 'Рейтинг по Kudos'
+                        }
                     },
                     {
                         "block_id": "select_action",
@@ -521,7 +466,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                     },
                     {
                         "type": "actions",
-                        "elements": [
+                        "elements": user.is_admin ? [
                             {
                                 "type": "button",
                                 "text": {
@@ -531,8 +476,26 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 },
                                 "value": action.value,
                                 "action_id": "actionId-0"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Отправленные kudos",
+                                    "emoji": true
+                                },
+                                "action_id": "sended_kudos"
                             }
-                        ]
+                        ] : [{
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Посмотреть рейтинг",
+                                "emoji": true
+                            },
+                            "value": action.value,
+                            "action_id": "actionId-0"
+                        }]
                     },
                     ...adminBlocks,
                     {
@@ -635,42 +598,11 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                         type: "divider"
                     },
                     {
-                        "type": "actions",
-                        "elements": user.user.is_admin ? [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "generate_report"
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            }
-                        ] : [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "generate_report"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "divider"
+                        type: 'section',
+                        text: {
+                            type: 'plain_text',
+                            text: 'Рейтинг по Kudos'
+                        }
                     },
                     {
                         "block_id": "select_action",
@@ -724,7 +656,27 @@ app.action('generate_report', async ({ ack, client, body, action }) => {
                     },
                     {
                         "type": "actions",
-                        "elements": [
+                        "elements": user.user.is_admin ? [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Посмотреть рейтинг",
+                                    "emoji": true
+                                },
+                                "value": action.value,
+                                "action_id": "actionId-0"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Отправленные kudos",
+                                    "emoji": true
+                                },
+                                "action_id": "sended_kudos"
+                            }
+                        ] : [
                             {
                                 "type": "button",
                                 "text": {
@@ -865,42 +817,11 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                         type: "divider"
                     },
                     {
-                        "type": "actions",
-                        "elements": admin.is_admin ? [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": body.user.id,
-                                "action_id": "generate_report"
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            }
-                        ] : [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": body.user.id,
-                                "action_id": "generate_report"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "divider"
+                        type: 'section',
+                        text: {
+                            type: 'plain_text',
+                            text: 'Рейтинг по Kudos'
+                        }
                     },
                     {
                         "block_id": "select_action",
@@ -954,7 +875,27 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                     },
                     {
                         "type": "actions",
-                        "elements": [
+                        "elements": admin.is_admin ? [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Посмотреть рейтинг",
+                                    "emoji": true
+                                },
+                                "value": body.user.id,
+                                "action_id": "actionId-0"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Отправленные kudos",
+                                    "emoji": true
+                                },
+                                "action_id": "sended_kudos"
+                            }
+                        ] : [
                             {
                                 "type": "button",
                                 "text": {
@@ -1038,31 +979,11 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                         type: "divider"
                     },
                     {
-                        "type": "actions",
-                        "elements": [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Рейтинг по всем Kudos",
-                                    "emoji": true
-                                },
-                                "value": body.user.id,
-                                "action_id": "generate_report"
-                            },
-                            isAdmin.user.is_admin ? {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            } : {}
-                        ]
-                    },
-                    {
-                        "type": "divider"
+                        type: 'section',
+                        text: {
+                            type: 'plain_text',
+                            text: 'Рейтинг по Kudos'
+                        }
                     },
                     {
                         "block_id": "select_action",
@@ -1116,7 +1037,27 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                     },
                     {
                         "type": "actions",
-                        "elements": [
+                        "elements": isAdmin.user.is_admin ? [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Посмотреть рейтинг",
+                                    "emoji": true
+                                },
+                                "value": body.user.id,
+                                "action_id": "actionId-0"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Отправленные kudos",
+                                    "emoji": true
+                                },
+                                "action_id": "sended_kudos"
+                            }
+                        ] : [
                             {
                                 "type": "button",
                                 "text": {

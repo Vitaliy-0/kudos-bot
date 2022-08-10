@@ -1,6 +1,6 @@
 export const monthes = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 export const kudos = {
-    'all': 'Все',
+    'all': 'По всем Kudos',
     'star-struck': 'Качественный продукт',
     'hugging_face': 'Клиентоориентированность',
     'bulb': 'Генератор идей',
@@ -349,7 +349,7 @@ export const getAdminBlock = (admin) => {
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": "Получить информацию",
+                            "text": "Посмотреть",
                             "emoji": true
                         },
                         "value": "click_me_123",
