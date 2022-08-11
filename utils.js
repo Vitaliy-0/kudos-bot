@@ -1,3 +1,6 @@
+import mongoose from 'mongoose';
+import { userSchema } from './schemas/User.js';
+
 export const monthes = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 export const kudos = {
     'all': 'По всем Kudos',
@@ -16,18 +19,48 @@ export const getSum = (item) => {
     }, 0);
 }
 
-const prepareData = (data, year, month, notSliced) => {
+export const filterUsers = (users) => {
+    return users.filter(user => {
+        if (user.is_bot || user.id === 'USLACKBOT') {
+            return false;
+        } else {
+            return true;
+        }
+    })
+}
 
-    return data.filter(user => user && user?.reactions && user?.reactions[year] && user?.reactions[year][month])
-        .sort((user1, user2) => {
-        const sum1 = user1 && Object.keys(user1.reactions[year][month]).reduce((acc, userId) => {
-            acc += getSum(user1.reactions[year][month][userId]) 
+const prepareData = (data, year, month, notSliced, usersList, adding) => {
+    const workedData = [...data];
+    filterUsers(usersList.members)
+        .forEach(async user => {
+            const exist = data.some(el => el?.id === user.id);
+
+            if (!exist && adding) {
+                const User = mongoose.model('User', userSchema);
+                const newUser = new User({
+                    id: user.id,
+                    name: user.real_name,
+                    username: user.name,
+                    reactions: {},
+                    reactions_added: {}
+                });
+                await newUser.save();
+                workedData.push(user)
+            }
+        })
+
+    return workedData.sort((user1, user2) => {
+        const check1 = user1 && user1.reactions && user1.reactions[year] && user1.reactions[year][month];
+        const sum1 = check1 && Object.keys(check1).reduce((acc, userId) => {
+            acc += getSum(check1[userId]) 
             return acc;
-        }, 0);
-        const sum2 = user2 && Object.keys(user2.reactions[year][month]).reduce((acc, userId) => {
-            acc += getSum(user2.reactions[year][month][userId]);
+        }, 0) || 0;
+        const check2 = user2 && user2.reactions && user2.reactions[year] && user2.reactions[year][month];
+        const sum2 = check2 && Object.keys(check2).reduce((acc, userId) => {
+            acc += getSum(check2[userId]);
             return acc;
-        }, 0);
+        }, 0) || 0;
+
         return sum2 - sum1;
     }).slice(0, notSliced ? 1000 : 5)
 }
@@ -86,54 +119,53 @@ export const transformEmodji = (data) => {
     }))
 }
 
-export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, notSlice = false) => {
+export const transformDataFromDB2 = (data, usersList, reaction, year, month, notSlice = false) => {
+    const currentMonth = monthes[new Date().getMonth()];
+
     if (!reaction) {
-        let userIndex = 0;
         const arr = [{
             type: 'section',
             fields: []
         }];
         let count = 0;
 
-        prepareData(data, year, month, notSlice)
-            .map((user, idx) => {
-                const sum = getReactionsSum(user, year, month);
-                const temp = user && user?.reactions && user?.reactions[year] && user?.reactions[year][month];
-                const userReactions = {};
+        const preparedData = prepareData(data, year, month, notSlice, usersList, true)
+        if (!data.some(user => user && user.reactions && user.reactions[year] && user.reactions[year][month]) && month !== currentMonth) {
+            return arr
+        }
+        preparedData.map((user, idx) => {
+            const sum = getReactionsSum(user, year, month);
+            const temp = user && user?.reactions && user?.reactions[year] && user?.reactions[year][month];
+            const userReactions = {};
 
-                if (sum) {
-                    Object.keys(temp).forEach(id => {
-                        Object.keys(temp[id]).forEach((emojiName) => {
-                            userReactions[emojiName] = userReactions[emojiName] ? userReactions[emojiName] + temp[id][emojiName] : temp[id][emojiName]
-                        })
-                    });
-                }
-
-                if (usersInDB) {
-                    userIndex = prepareData(usersInDB, year, month, true).findIndex(user => user.id === data[0]?.id) + 1
-                }
-
-                if (arr[count]?.fields?.length === 10) {
-                    arr.push({
-                        type: 'section',
-                        fields: []
-                    });
-                    count++;
-                }
-                arr[count].fields.push({
-                    type: 'plain_text',
-                    text: `${usersInDB ? userIndex : idx + 1}. ${user.name} (<@${user.username}>)`
+            if (sum) {
+                Object.keys(temp).forEach(id => {
+                    Object.keys(temp[id]).forEach((emojiName) => {
+                        userReactions[emojiName] = userReactions[emojiName] ? userReactions[emojiName] + temp[id][emojiName] : temp[id][emojiName]
+                    })
                 });
-                arr[count].fields.push({
-                    type: 'plain_text',
-                    text: `Всего - ${sum}        ${Object.keys(userReactions).map(reaction => `:${reaction}: - ${userReactions[reaction]}`).join('  ')}`,
-                    emoji: true
+            }
+
+            if (arr[count]?.fields?.length === 10) {
+                arr.push({
+                    type: 'section',
+                    fields: []
                 });
+                count++;
+            }
+            arr[count].fields.push({
+                type: 'plain_text',
+                text: `${idx + 1}. ${user.name || ''} (<@${user.username}>)`
             });
+            arr[count].fields.push({
+                type: 'plain_text',
+                text: `Всего - ${sum}        ${Object.keys(userReactions).map(reaction => `:${reaction}: - ${userReactions[reaction]}`).join('  ')}`,
+                emoji: true
+            });
+        });
 
         return arr
     } else {
-        let index = 0;
         const arr = [{
             type: "section",
             fields: []
@@ -141,11 +173,6 @@ export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, not
         let count = 0;
         prepareDataWithReaction(data, reaction, year, month, notSlice)
             .map((user, idx) => {
-
-                if (usersInDB) {
-                    index = prepareDataWithReaction(usersInDB, reaction, year, month, true)
-                        .findIndex(user => user.id === data[0]?.id) + 1
-                }
 
                 const reactionsCount = Object.keys(user.reactions[year][month]).reduce((acc, key) => {
                     if (user.reactions[year][month][key][reaction]) {
@@ -164,7 +191,7 @@ export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, not
 
                 arr[count].fields.push({
                     type: "plain_text",
-                    "text": `${usersInDB ? index : idx + 1}. ${user.name} (<@${user.username}>)`,
+                    "text": `${idx + 1}. ${user.name} (<@${user.username}>)`,
                     emoji: true
                 });
                 arr[count].fields.push({
@@ -175,6 +202,71 @@ export const transformDataFromDB2 = (data, reaction, year, month, usersInDB, not
             });
 
         return arr;
+    }
+}
+
+export const transformUserData = async (userInDB, usersInDB, usersList, year, month, isAdmin, reactionName) => {
+    if (!userInDB) {
+        return;
+    }
+
+    if (!reactionName) {
+        const index = (prepareData(usersInDB, year, month, true, usersList, false).findIndex(user => user.id === userInDB.id) || 0) + 1;
+        const reactions = {};
+        const sum = userInDB?.reactions && userInDB?.reactions[year] && userInDB?.reactions[year][month]
+            && Object.keys(userInDB?.reactions[year][month]).reduce((acc, id) => {
+                acc += Object.keys(userInDB?.reactions[year][month][id]).reduce((accum, reaction) => {
+                    const count = userInDB?.reactions[year][month][id][reaction]
+                    accum += count;
+                    if (!reactions[reaction]) {
+                        reactions[reaction] = count
+                    } else {
+                        reactions[reaction] = reactions[reaction] + count
+                    }
+                    return accum;
+                }, 0);
+                return acc;
+            }, 0) || 0;
+        if (sum <= 0) {
+            return;
+        }
+        return [{
+            type: 'section',
+            fields: [
+                {
+                    type: 'plain_text',
+                    text: `${typeof index === 'number' ? index : ''}. ${userInDB.name} (<@${userInDB.username}>)`
+                },
+                {
+                    type: 'plain_text',
+                    text: `Всего - ${sum}        ${Object.keys(reactions).map(key => `:${key}: - ${reactions[key]}`).join(' ')}`
+                }
+            ]
+        }]
+    } else {
+        const preparedData = prepareDataWithReaction(usersInDB, reactionName, year, month, true);
+        const sum = userInDB?.reactions && userInDB?.reactions[year] && userInDB?.reactions[year][month]
+            && Object.keys(userInDB?.reactions[year][month]).reduce((acc, id) => {
+                acc += userInDB?.reactions[year][month][id][reactionName] || 0;
+                return acc;
+            }, 0)
+        const index = preparedData.findIndex(el => el.id === userInDB.id) + 1;
+        if (index === 0) {
+            return
+        }
+        return [{
+            type: 'section',
+            fields: [
+                {
+                    type: 'plain_text',
+                    text: `${index}. ${userInDB.name || ''} (<@${userInDB.username}>)`
+                },
+                {
+                    type: 'plain_text',
+                    text: `:${reactionName}: ${kudos[reactionName]} - ${sum}`
+                }
+            ]
+        }]
     }
 }
 
@@ -258,16 +350,6 @@ export const description = () => {
     ]
 
     return data;
-}
-
-export const filterUsers = (users) => {
-    return users.filter(user => {
-        if (user.is_bot) {
-            return false;
-        } else {
-            return true;
-        }
-    })
 }
 
 export const getDataHead = (admin) => {

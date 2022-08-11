@@ -16,7 +16,8 @@ import {
     getAdminBlock,
     getInfoAboutUser,
     getSum,
-    getSendKudosData
+    getSendKudosData,
+    transformUserData
 } from './utils.js';
 import { userSchema } from './schemas/User.js';
 dotenv.config();
@@ -44,7 +45,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
 
 (async function main() {
     try {
-        await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
+        await mongoose.connect(`mongodb+srv://front:dmciIFlLjapeAgxo@cluster0.fibxjpf.mongodb.net/test`);
         console.log('connected to mongodb');
     } catch (err) {
         console.error(err)
@@ -161,7 +162,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                                     "emoji": true
                                 },
                                 "value": event.user,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             },
                             {
                                 "type": "button",
@@ -180,7 +181,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                                 "emoji": true
                             },
                             "value": event.user,
-                            "action_id": "actionId-0"
+                            "action_id": "get_kudos"
                         }]
                     },
                     ...adminBlocks
@@ -192,7 +193,7 @@ app.event('app_home_opened', async ({ client, event }) => {
     }
 });
 
-app.action('actionId-0', async ({ ack, client, body, action }) => {
+app.action('get_kudos', async ({ ack, client, body, action }) => {
     try {
         await ack();
 
@@ -309,7 +310,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                         "emoji": true
                                     },
                                     "value": action.value,
-                                    "action_id": "actionId-0"
+                                    "action_id": "get_kudos"
                                 },
                                 {
                                     "type": "button",
@@ -329,7 +330,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                         "emoji": true
                                     },
                                     "value": action.value,
-                                    "action_id": "actionId-0"
+                                    "action_id": "get_kudos"
                                 }
                             ]
                         },
@@ -349,8 +350,8 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
             return
         };
 
-        const blocks = transformDataFromDB2(usersInDB, reactionName, year?.value || year, month?.value || month, false, user.is_admin);
-        const userData = transformDataFromDB2([userInDB], reactionName, year?.value || year, month?.value || month, usersInDB, user.is_admin)
+        const blocks = transformDataFromDB2(usersInDB, usersList, reactionName, year?.value || year, month?.value || month, user.is_admin);
+        const userData = await transformUserData(userInDB, usersInDB, usersList, year?.value || year, month?.value || month, user.is_admin, reactionName)
 
         const shownInfo = blocks[0]?.fields?.length > 1 ? [
             ...blocks,
@@ -364,7 +365,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                     "text": "Ваше место в рейтинге"
                 }
             },
-            ...(userData?.length && !userData[0]?.fields || (userData?.length && userData[0]?.fields?.length) ? userData : [{
+            ...(userData ? userData : [{
                 "type": "section",
                 "text": {
                     "type": "plain_text",
@@ -475,7 +476,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                     "emoji": true
                                 },
                                 "value": action.value,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             },
                             {
                                 "type": "button",
@@ -494,7 +495,7 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
                                 "emoji": true
                             },
                             "value": action.value,
-                            "action_id": "actionId-0"
+                            "action_id": "get_kudos"
                         }]
                     },
                     ...adminBlocks,
@@ -509,198 +510,6 @@ app.action('actionId-0', async ({ ack, client, body, action }) => {
         })
     } catch (e) {
         console.error(e);
-    }
-});
-
-app.action('generate_report', async ({ ack, client, body, action }) => {
-    try {
-        await ack();
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = monthes[date.getMonth()];
-
-        const newYears = transformDatesToBlocks(years);
-        const newMonthes = transformDatesToBlocks(monthes);
-        const emodji = transformEmodji(kudos);
-
-        const selectedYear = body.view.state.values['select_action']['compliment_year_select']['selected_option'] || year;
-        const selectedMonth = body.view.state.values['select_action']['compliment_month_select']['selected_option'] || month;
-
-        const user = await client.users.info({ user: action.value });
-        const users = await client.users.list();
-
-        const User = mongoose.model('User', userSchema);
-        const usersInDB = await User.find();
-        const userInDB = await User.findOne({ id: action.value });
-        const count = getReactionsCount(userInDB, reactionsLimit);
-
-        const blocks = transformDataFromDB2(usersInDB, false, year, month, false, user.user.is_admin, users.members);
-        const userData = transformDataFromDB2([userInDB], false, year, month, usersInDB, false);
-        const adminBlocks = getAdminBlock(user.user.is_admin)
-
-        const shownInfo = blocks[0]?.fields?.length > 1 ? [
-            ...blocks,
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Ваше место в рейтинге"
-                }
-            },
-            ...(userData?.length && !userData[0]?.fields || (userData?.length && userData[0]?.fields?.length) ? userData : [{
-                "type": "section",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Похоже, Вам не присылали Kudos в этом месяце. Однако, никогда не поздно это исправить! ;)",
-                    "emoji": true
-                }
-            }])
-        ] : [
-            {
-                "type": "section",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Рейтинг еще не сформирован. Отправьте первый Kudos, чтобы начать!)",
-                    "emoji": true
-                }
-            }]
-
-        const kudosCount = getKudosCount(user.user.is_admin, usersInDB, year, month)
-
-        const dataHead = getDataHead(user.user.is_admin);
-
-        await client.views.publish({
-            user_id: action.value,
-            view: {
-                "type": "home",
-                "blocks": [
-                    {
-                        "type": "header",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Flawless Team bot :tada:",
-                            "emoji": true
-                        }
-                    },
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "plain_text",
-                            "text": `Количество оставшихся Kudos, которые ты можешь отправить сегодня: ${count}`,
-                            "emoji": true
-                        }
-                    },
-                    ...description(),
-                    {
-                        type: "divider"
-                    },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'plain_text',
-                            text: 'Рейтинг по Kudos'
-                        }
-                    },
-                    {
-                        "block_id": "select_action",
-                        "type": "actions",
-                        "elements": [
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите kudos",
-                                    "emoji": true
-                                },
-                                "options": emodji,
-                                "action_id": "compliment_actionId-0"
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите год",
-                                    "emoji": true
-                                },
-                                "options": newYears,
-                                "action_id": "compliment_year_select",
-                                "initial_option": selectedYear?.value ? selectedYear : {
-                                    "value": String(selectedYear),
-                                    "text": {
-                                        "type": "text_plain",
-                                        "text": String(selectedYear)
-                                    }
-                                }
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите месяц",
-                                    "emoji": true
-                                },
-                                "options": newMonthes,
-                                "action_id": "compliment_month_select",
-                                "initial_option": selectedMonth?.value ? selectedMonth : {
-                                    "value": String(selectedMonth),
-                                    "text": {
-                                        "type": "text_plain",
-                                        "text": String(selectedMonth)
-                                    }
-                                }
-                            },
-                        ]
-                    },
-                    {
-                        "type": "actions",
-                        "elements": user.user.is_admin ? [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Посмотреть рейтинг",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "actionId-0"
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Отправленные kudos",
-                                    "emoji": true
-                                },
-                                "action_id": "sended_kudos"
-                            }
-                        ] : [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Посмотреть рейтинг",
-                                    "emoji": true
-                                },
-                                "value": action.value,
-                                "action_id": "actionId-0"
-                            }
-                        ]
-                    },
-                    ...adminBlocks,
-                    {
-                        "type": "divider"
-                    },
-                    dataHead,
-                    ...shownInfo,
-                    kudosCount
-                ]
-            }
-        })
-    } catch (e) {
-        console.error(e)
     }
 });
 
@@ -884,7 +693,7 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                                     "emoji": true
                                 },
                                 "value": body.user.id,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             },
                             {
                                 "type": "button",
@@ -904,7 +713,7 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                                     "emoji": true
                                 },
                                 "value": body.user.id,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             }
                         ]
                     },
@@ -1046,7 +855,7 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                                     "emoji": true
                                 },
                                 "value": body.user.id,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             },
                             {
                                 "type": "button",
@@ -1066,7 +875,7 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                                     "emoji": true
                                 },
                                 "value": body.user.id,
-                                "action_id": "actionId-0"
+                                "action_id": "get_kudos"
                             }
                         ]
                     },
