@@ -45,7 +45,7 @@ for (let i = 2022; i <= new Date().getFullYear(); i++) {
 
 (async function main() {
     try {
-        await mongoose.connect(`mongodb+srv://front:dmciIFlLjapeAgxo@cluster0.fibxjpf.mongodb.net/test`);
+        await mongoose.connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DB}`);
         console.log('connected to mongodb');
     } catch (err) {
         console.error(err)
