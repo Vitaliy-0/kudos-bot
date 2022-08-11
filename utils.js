@@ -401,54 +401,114 @@ export const getKudosCount = (admin, usersInDB, year, month, reaction) => {
     }
 }
 
-export const getAdminBlock = (admin) => {
-    if (admin) {
+export const getMainElements = (isAdmin, newYears, newMonthes, year, month, emoji) => {
+    if (isAdmin) {
         return [
             {
-                type: 'divider'
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите kudos",
+                    "emoji": true
+                },
+                "options": emoji,
+                "action_id": "kudos_select"
             },
             {
-                type: 'section',
-                text: {
-                    type: 'plain_text',
-                    text: 'Информация о полученных kudos'
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите год",
+                    "emoji": true
+                },
+                "options": newYears,
+                "action_id": "compliment_year_select",
+                "initial_option": {
+                    "value": String(year),
+                    "text": {
+                        "type": "plain_text",
+                        "text": String(year)
+                    }
                 }
             },
             {
-                "block_id": "user_emoji_info",
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "users_select",
-                        "placeholder": {
-                            "type": "plain_text",
-                            "text": "Выберите пользователя",
-                            "emoji": true
-                        },
-                        "action_id": "user_select_action"
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Посмотреть",
-                            "emoji": true
-                        },
-                        "value": "click_me_123",
-                        "action_id": "get_user_info"
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите месяц",
+                    "emoji": true
+                },
+                "options": newMonthes,
+                "action_id": "compliment_month_select",
+                "initial_option": {
+                    "value": String(month),
+                    "text": {
+                        "type": "plain_text",
+                        "text": String(month)
                     }
-                ]
+                }
+            },
+            {
+                "type": "users_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите пользователя",
+                    "emoji": true
+                },
+                "action_id": "user_select_action"
+            }
+        ]
+    } else {
+        return [
+            {
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите kudos",
+                    "emoji": true
+                },
+                "options": emoji,
+                "action_id": "kudos_select"
+            },
+            {
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите год",
+                    "emoji": true
+                },
+                "options": newYears,
+                "action_id": "compliment_year_select",
+                "initial_option": {
+                    "value": String(year),
+                    "text": {
+                        "type": "plain_text",
+                        "text": String(year)
+                    }
+                }
+            },
+            {
+                "type": "static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Выберите месяц",
+                    "emoji": true
+                },
+                "options": newMonthes,
+                "action_id": "compliment_month_select",
+                "initial_option": {
+                    "value": String(month),
+                    "text": {
+                        "type": "plain_text",
+                        "text": String(month)
+                    }
+                }
             }
         ]
     }
-    return []
 }
 
-export const getInfoAboutUser = (user, usersList, year, month, admin) => {
-    if (!admin) {
-        return [{}]
-    };
-
+export const getInfoAboutUser = (user, usersList, year, month, reaction) => {
     if (!user) {
         return [{
             type: 'section',
@@ -468,43 +528,85 @@ export const getInfoAboutUser = (user, usersList, year, month, admin) => {
         let count = 0;
         let i = 0;
 
-        Object.keys(user.reactions[year][month])
-            .sort((a, b) => {
-                const sumA = getSum(user.reactions[year][month][a]);
-                const sumB = getSum(user.reactions[year][month][b]);
-                return sumB - sumA
-            })
-            .forEach((key) => {
-                count++;
-                const userByKey = usersList.find(item => String(item?.id) === String(key));
-                if (!userByKey) {
-                    count --;
-                    return;
-                }
-                if (userByKey?.id === 'U03N4J0P12S') {
-                    count--;
-                    return;
-                }
-
-                if (arr[i].fields.length === 10) {
-                    arr.push({
-                        type: 'section',
-                        fields: []
-                    });
-                    i++;
-                }
-                arr[i].fields.push({
-                    type: 'plain_text',
-                    text: `${count}. ${userByKey.real_name} (<@${userByKey.name}>)`
-                });
-
-                arr[i].fields.push({
-                    type: 'plain_text',
-                    text: `Всего: ${getSum(user.reactions[year][month][key])}  ${Object.keys(user.reactions[year][month][key]).map(emoji => `:${emoji}: - ${user.reactions[year][month][key][emoji]}`).join(' ')}`,
-                    emoji: true
+        if (!reaction || reaction === ':all:') {
+            Object.keys(user.reactions[year][month])
+                .sort((a, b) => {
+                    const sumA = getSum(user.reactions[year][month][a]);
+                    const sumB = getSum(user.reactions[year][month][b]);
+                    return sumB - sumA
                 })
-        });
-        return arr
+                .forEach(key => {
+                    count++;
+                    const userByKey = usersList.find(item => String(item?.id) === String(key));
+                    if (!userByKey) {
+                        count --;
+                        return;
+                    }
+                    if (userByKey?.id === 'U03N4J0P12S') {
+                        count--;
+                        return;
+                    }
+
+                    if (arr[i].fields.length === 10) {
+                        arr.push({
+                            type: 'section',
+                            fields: []
+                        });
+                        i++;
+                    }
+                    arr[i].fields.push({
+                        type: 'plain_text',
+                        text: `${count}. ${userByKey.real_name} (<@${userByKey.name}>)`
+                    });
+
+                    arr[i].fields.push({
+                        type: 'plain_text',
+                        text: `Всего: ${getSum(user.reactions[year][month][key])}  ${Object.keys(user.reactions[year][month][key]).map(emoji => `:${emoji}: - ${user.reactions[year][month][key][emoji]}`).join(' ')}`,
+                        emoji: true
+                    })
+            });
+            return arr
+        } else {
+            const normalize = reaction.split(':')[1]
+            Object.keys(user.reactions[year][month])
+                .filter(userId => user.reactions[year][month][userId][normalize])
+                .sort((a, b) => {
+                    const sumA = getSum(user.reactions[year][month][a][normalize] || {});
+                    const sumB = getSum(user.reactions[year][month][b][normalize] || {});
+                    return sumB - sumA
+                })
+                .forEach(key => {
+                    count++;
+                    const userByKey = usersList.find(item => String(item?.id) === String(key));
+                    if (!userByKey) {
+                        count --;
+                        return;
+                    }
+                    if (userByKey?.id === 'U03N4J0P12S') {
+                        count--;
+                        return;
+                    }
+                    if (arr[i].fields.length === 10) {
+                        arr.push({
+                            type: 'section',
+                            fields: []
+                        });
+                        i++;
+                    }
+                    arr[i].fields.push({
+                        type: 'plain_text',
+                        text: `${count}. ${userByKey.real_name} (<@${userByKey.name}>)`
+                    });
+
+                    arr[i].fields.push({
+                        type: 'plain_text',
+                        text: `:${normalize}: ${kudos[normalize]} - ${user.reactions[year][month][key][normalize]}`,
+                        emoji: true
+                    })
+                });
+            return arr
+        }
+
     } else {
         return [{
             type: 'section',
@@ -516,61 +618,108 @@ export const getInfoAboutUser = (user, usersList, year, month, admin) => {
     }
 }
 
-export const getSendKudosData = (users, year, month) => {
+export const getSendKudosData = (users, year, month, selectedUser) => {
     const fields = [{
         type: 'section',
         fields: []
     }];
     let count = 0;
 
-    users
-    .filter(user => user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month])
-    .sort((a, b) => {
-        let sumA = 0;
-        let sumB = 0;
-        Object.keys(a.reactions_added[year][month])
-            .forEach(day => {
-                Object.keys(a.reactions_added[year][month][day])
-                    .forEach(userId => {
-                        sumA += getSum(a.reactions_added[year][month][day][userId])
+    if (!selectedUser) {
+        users
+            .sort((a, b) => {
+                let sumA = 0;
+                let sumB = 0;
+                const check1 = a && a.reactions_added && a.reactions_added[year] && a.reactions_added[year][month];
+                check1 && Object.keys(check1)
+                    .forEach(day => {
+                        Object.keys(check1[day])
+                            .forEach(userId => {
+                                sumA += getSum(check1[day][userId])
+                            })
+                    });
+                const check2 = b && b.reactions_added && b.reactions_added[year] && b.reactions_added[year][month];
+                check2 && Object.keys(check2)
+                    .forEach(day => {
+                        Object.keys(check2[day])
+                            .forEach(userId => {
+                                sumB += getSum(check2[day][userId])
+                            })
+                    });
+                return sumB - sumA;
+            })
+            .forEach((user, i) => {
+                const summaryKudos = {};
+                if (!(user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month])) return fields;
+                if (user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month]) {
+                    Object.keys(user.reactions_added[year][month]).forEach(day => {
+                        Object.keys(user.reactions_added[year][month][day]).forEach(userId => {
+                            Object.keys(user.reactions_added[year][month][day][userId]).forEach(emoji => {
+                                summaryKudos[emoji] = summaryKudos[emoji] ? summaryKudos[emoji] + user.reactions_added[year][month][day][userId][emoji] : user.reactions_added[year][month][day][userId][emoji];
+                            })
+                        })
+                    });
+                }
+                if (fields[0].fields.length === 10) {
+                    fields.push({
+                        type: 'section',
+                        fields: []
+                    });
+                    count++;
+                }
+                fields[count].fields.push({
+                    type: 'plain_text',
+                    text: `${i + 1}. ${user.name} (<@${user.username}>)`
+                });
+                fields[count].fields.push({
+                    type: 'plain_text',
+                    text: `Всего - ${getSum(summaryKudos)}  ${Object.keys(summaryKudos).map(emoji => `:${emoji}: - ${summaryKudos[emoji]}`).join(' ')}`,
+                    emoji: true
+                });
+            });
+    } else {
+        const user = users.find(item => item.id === selectedUser);
+        if (!user || !(user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month])) return fields;
+        const reactions = {};
+        Object.values(user.reactions_added[year][month]).forEach(day => {
+            Object.keys(day).forEach(userId => {
+                if (reactions[userId]) {
+                    Object.keys(day[userId]).forEach(reaction => {
+                        reactions[userId] = {
+                            ...reactions[userId],
+                            [reaction]: reactions[userId][reaction] ? reactions[userId][reaction] + day[userId][reaction] : day[userId][reaction]
+                        }
                     })
-            });
-        Object.keys(b.reactions_added[year][month])
-            .forEach(day => {
-                Object.keys(b.reactions_added[year][month][day])
-                    .forEach(userId => {
-                        sumB += getSum(b.reactions_added[year][month][day][userId])
-                    })
-            });
-        return sumB - sumA;
-    })
-    .forEach((user, i) => {
-        const summaryKudos = {};
-        if (user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month]) {
-            Object.keys(user.reactions_added[year][month]).forEach(day => {
-                Object.keys(user.reactions_added[year][month][day]).forEach(userId => {
-                    Object.keys(user.reactions_added[year][month][day][userId]).forEach(emoji => {
-                        summaryKudos[emoji] = summaryKudos[emoji] ? summaryKudos[emoji] + user.reactions_added[year][month][day][userId][emoji] : user.reactions_added[year][month][day][userId][emoji];
-                    })
-                })
-            });
-        }
-        if (fields[0].fields.length === 10) {
-            fields.push({
-                type: 'section',
-                fields: []
-            });
-            count++;
-        }
-        fields[count].fields.push({
-            type: 'plain_text',
-            text: `${i + 1}. ${user.name} (<@${user.username}>)`
-        });
-        fields[count].fields.push({
-            type: 'plain_text',
-            text: `Всего - ${getSum(summaryKudos)}  ${Object.keys(summaryKudos).map(emoji => `:${emoji}: - ${summaryKudos[emoji]}`).join(' ')}`,
-            emoji: true
-        });
-    });
+                } else {
+                    reactions[userId] = day[userId]
+                }
+            })
+        })
+        Object.keys(reactions)
+            .sort((a, b) => {
+                const sum1 = getSum(reactions[a]);
+                const sum2 = getSum(reactions[b]);
+                return sum2 - sum1;
+            })
+            .forEach((userId, i) => {
+                const user = users.find(u => u.id === userId);
+                if (fields[0].fields.length === 10) {
+                    fields.push({
+                        type: 'section',
+                        fields: []
+                    });
+                    count++;
+                }
+                fields[count].fields.push({
+                    type: 'plain_text',
+                    text: `${i + 1}. ${user.name} (<@${user.username}>)`
+                });
+                fields[count].fields.push({
+                    type: 'plain_text',
+                    text: `Всего - ${getSum(reactions[userId])}  ${Object.keys(reactions[userId]).map(emoji => `:${emoji}: - ${reactions[userId][emoji]}`).join(' ')}`,
+                    emoji: true
+                });
+            })
+    }
     return fields
 }

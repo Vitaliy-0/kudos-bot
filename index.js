@@ -13,10 +13,10 @@ import {
     filterUsers,
     getDataHead,
     getKudosCount,
-    getAdminBlock,
     getInfoAboutUser,
     getSum,
     getSendKudosData,
+    getMainElements,
     transformUserData
 } from './utils.js';
 import { userSchema } from './schemas/User.js';
@@ -57,7 +57,7 @@ app.event('app_home_opened', async ({ client, event }) => {
         const date = new Date();
         const year = date.getFullYear();
         const month = monthes[date.getMonth()];
-        const emodji = transformEmodji(kudos);
+        const emoji = transformEmodji(kudos);
 
         const isAdmin = await client.users.info({ user: event.user });
 
@@ -67,7 +67,8 @@ app.event('app_home_opened', async ({ client, event }) => {
 
         const newYears = transformDatesToBlocks(years);
         const newMonthes = transformDatesToBlocks(monthes);
-        const adminBlocks = getAdminBlock(isAdmin.user.is_admin)
+
+        const mainElements = getMainElements(isAdmin.user.is_admin, newYears, newMonthes, year, month, emoji)
 
         await client.views.publish({
             user_id: event.user,
@@ -104,52 +105,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                     {
                         "block_id": "select_action",
                         "type": "actions",
-                        "elements": [
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите kudos",
-                                    "emoji": true
-                                },
-                                "options": emodji,
-                                "action_id": "compliment_actionId-0"
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите год",
-                                    "emoji": true
-                                },
-                                "options": newYears,
-                                "action_id": "compliment_year_select",
-                                "initial_option": {
-                                    "value": String(year),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(year)
-                                    }
-                                }
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите месяц",
-                                    "emoji": true
-                                },
-                                "options": newMonthes,
-                                "action_id": "compliment_month_select",
-                                "initial_option": {
-                                    "value": String(month),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(month)
-                                    }
-                                }
-                            },
-                        ]
+                        "elements": mainElements
                     },
                     {
                         "type": "actions",
@@ -172,6 +128,16 @@ app.event('app_home_opened', async ({ client, event }) => {
                                     "emoji": true
                                 },
                                 "action_id": "sended_kudos"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Полученные Kudos",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "action_id": "get_user_info"
                             }
                         ] : [{
                             "type": "button",
@@ -183,8 +149,7 @@ app.event('app_home_opened', async ({ client, event }) => {
                             "value": event.user,
                             "action_id": "get_kudos"
                         }]
-                    },
-                    ...adminBlocks
+                    }
                 ]
             }
         })
@@ -200,8 +165,8 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
         const date = new Date();
         const newYears = transformDatesToBlocks(years);
         const newMonthes = transformDatesToBlocks(monthes);
-        const emodji = transformEmodji(kudos);
-        const selected = body.view.state.values['select_action']['compliment_actionId-0']['selected_option'];
+        const emoji = transformEmodji(kudos);
+        const selected = body.view.state.values['select_action']['kudos_select']['selected_option'];
         const year = body.view.state.values['select_action']['compliment_year_select']['selected_option'] || String(date.getFullYear());
         const month = body.view.state.values['select_action']['compliment_month_select']['selected_option'] || String(monthes[date.getMonth()]);
 
@@ -213,7 +178,8 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
         const reactionName = selected && selected.text.text.split(' ')[0].split(':')[1];
         const usersList = await client.users.list();
         const user = usersList.members.find(man => man.id === action.value);
-        const adminBlocks = getAdminBlock(user.is_admin)
+
+        const mainElements = getMainElements(user.is_admin, newYears, newMonthes, year?.value || year, month?.value || month, emoji)
 
         if (!selected || !year || !month) {
             await client.views.publish({
@@ -252,52 +218,7 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                         {
                             "block_id": "select_action",
                             "type": "actions",
-                            "elements": [
-                                {
-                                    "type": "static_select",
-                                    "placeholder": {
-                                        "type": "plain_text",
-                                        "text": "Выберите kudos",
-                                        "emoji": true
-                                    },
-                                    "options": emodji,
-                                    "action_id": "compliment_actionId-0"
-                                },
-                                {
-                                    "type": "static_select",
-                                    "placeholder": {
-                                        "type": "plain_text",
-                                        "text": "Выберите год",
-                                        "emoji": true
-                                    },
-                                    "options": newYears,
-                                    "action_id": "compliment_year_select",
-                                    "initial_option": year.value ? year : {
-                                        "value": String(year),
-                                        "text": {
-                                            "type": "plain_text",
-                                            "text": String(year)
-                                        }
-                                    }
-                                },
-                                {
-                                    "type": "static_select",
-                                    "placeholder": {
-                                        "type": "plain_text",
-                                        "text": "Выберите месяц",
-                                        "emoji": true
-                                    },
-                                    "options": newMonthes,
-                                    "action_id": "compliment_month_select",
-                                    "initial_option": month?.value ? month : {
-                                        "value": String(month),
-                                        "text": {
-                                            "type": "plain_text",
-                                            "text": String(month)
-                                        }
-                                    }
-                                },
-                            ]
+                            "elements": mainElements
                         },
                         {
                             "type": "actions",
@@ -320,6 +241,16 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                                         "emoji": true
                                     },
                                     "action_id": "sended_kudos"
+                                },
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Полученные Kudos",
+                                        "emoji": true
+                                    },
+                                    "value": "click_me_123",
+                                    "action_id": "get_user_info"
                                 }
                             ] : [
                                 {
@@ -342,8 +273,7 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                                     "text": ":face_with_head_bandage: Сначала выберите все параметры"
                                 }
                             ]
-                        },
-                        ...adminBlocks
+                        }
                     ]
                 }
             });
@@ -418,52 +348,7 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                     {
                         "block_id": "select_action",
                         "type": "actions",
-                        "elements": [
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите kudos",
-                                    "emoji": true
-                                },
-                                "options": emodji,
-                                "action_id": "compliment_actionId-0"
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите год",
-                                    "emoji": true
-                                },
-                                "options": newYears,
-                                "action_id": "compliment_year_select",
-                                "initial_option": year.value ? year : {
-                                    "value": String(year),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(year)
-                                    }
-                                }
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите месяц",
-                                    "emoji": true
-                                },
-                                "options": newMonthes,
-                                "action_id": "compliment_month_select",
-                                "initial_option": month?.value ? month : {
-                                    "value": String(month),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(month)
-                                    }
-                                }
-                            },
-                        ]
+                        "elements": mainElements
                     },
                     {
                         "type": "actions",
@@ -486,6 +371,16 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                                     "emoji": true
                                 },
                                 "action_id": "sended_kudos"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Полученные Kudos",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "action_id": "get_user_info"
                             }
                         ] : [{
                             "type": "button",
@@ -498,7 +393,6 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                             "action_id": "get_kudos"
                         }]
                     },
-                    ...adminBlocks,
                     {
                         "type": "divider"
                     },
@@ -513,7 +407,7 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
     }
 });
 
-app.action('compliment_actionId-0', async ({ ack }) => {
+app.action('kudos_select', async ({ ack }) => {
     try {
         await ack();
     } catch (e) {
@@ -564,8 +458,8 @@ app.action('user_info_month', async ({ ack }) => {
 app.action('get_user_info', async ({ ack, body, client }) => {
     try {
         await ack();
-
-        const selectedUser = body.view.state.values['user_emoji_info']['user_select_action']['selected_user'];
+        const selectedKudos = body.view.state.values['select_action']['kudos_select']['selected_option'];
+        const selectedUser = body.view.state.values['select_action']['user_select_action']['selected_user'];
         const selectedYear = body.view.state.values['select_action']['compliment_year_select']['selected_option'] || new Date().getFullYear();
         const selectedMonth = body.view.state.values['select_action']['compliment_month_select']['selected_option'] || monthes[new Date().getMonth()];
         const emoji = transformEmodji(kudos);
@@ -583,10 +477,9 @@ app.action('get_user_info', async ({ ack, body, client }) => {
         const User = mongoose.model('User', userSchema);
         const userInDB = await User.findOne({ id: selectedUser });
 
-        const adminBlocks = getAdminBlock(admin.is_admin);
         const count = getReactionsCount(userInDB, reactionsLimit);
 
-        const data = getInfoAboutUser(userInDB, usersList.members, selectedYear?.value || selectedYear, selectedMonth?.value || selectedMonth, admin.is_admin);
+        const data = getInfoAboutUser(userInDB, usersList.members, selectedYear?.value || selectedYear, selectedMonth?.value || selectedMonth, selectedKudos?.value);
 
         const kudosCount1 = () => {
             if (userInDB && userInDB?.reactions && userInDB.reactions[selectedYear?.value || selectedYear] && userInDB.reactions[selectedYear?.value || selectedYear][selectedMonth?.value || selectedMonth]) {
@@ -599,6 +492,8 @@ app.action('get_user_info', async ({ ack, body, client }) => {
             }
             return 0;
         }
+
+        const mainElements = getMainElements(admin.is_admin, newYears, newMonthes, selectedYear?.value || selectedYear, selectedMonth?.value || selectedMonth, emoji)
 
         await client.views.publish({
             user_id: body.user.id,
@@ -635,52 +530,7 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                     {
                         "block_id": "select_action",
                         "type": "actions",
-                        "elements": [
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите kudos",
-                                    "emoji": true
-                                },
-                                "options": emoji,
-                                "action_id": "compliment_actionId-0"
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите год",
-                                    "emoji": true
-                                },
-                                "options": newYears,
-                                "action_id": "compliment_year_select",
-                                "initial_option": selectedYear.value ? selectedYear : {
-                                    "value": String(selectedYear),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(selectedYear)
-                                    }
-                                }
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите месяц",
-                                    "emoji": true
-                                },
-                                "options": newMonthes,
-                                "action_id": "compliment_month_select",
-                                "initial_option": selectedMonth.value ? selectedMonth : {
-                                    "value": String(selectedMonth),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(selectedMonth)
-                                    }
-                                }
-                            },
-                        ]
+                        "elements": mainElements
                     },
                     {
                         "type": "actions",
@@ -703,6 +553,16 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                                     "emoji": true
                                 },
                                 "action_id": "sended_kudos"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Полученные Kudos",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "action_id": "get_user_info"
                             }
                         ] : [
                             {
@@ -717,14 +577,13 @@ app.action('get_user_info', async ({ ack, body, client }) => {
                             }
                         ]
                     },
-                    ...adminBlocks,
-                    ...(!data[0]?.fields?.length ? {
+                    ...(!data[0]?.fields?.length ? [{
                         type: 'section',
                         text: {
                             type: 'plain_text',
                             text: 'Информации об полученных Kudos к сожалению не найдено'
                         }
-                    } : data),
+                    }] : data),
                     admin.is_admin && data[0]?.fields?.length ? {
                         type: 'section',
                         text: {
@@ -747,20 +606,23 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
     try {
         await ack();
         const date = new Date();
-        const year = date.getFullYear();
-        const month = monthes[date.getMonth()];
+        const year = body.view.state.values['select_action']['compliment_year_select']['selected_option']?.value || date.getFullYear();
+        const month = body.view.state.values['select_action']['compliment_month_select']['selected_option']?.value || monthes[date.getMonth()];
         const isAdmin = await client.users.info({ user: body.user.id });
-        const users = await client.users.list();
+
+        const selectedUser = body.view.state.values['select_action']['user_select_action']['selected_user'];
+        const selectedKudos = body.view.state.values['select_action']['kudos_select']['selected_option'];
 
         const User = mongoose.model('User', userSchema);
         const userInDB = await User.findOne({ id: body.user.id });
         const usersInDB = await User.find();
-        const emodji = transformEmodji(kudos);
+        const emoji = transformEmodji(kudos);
         const count = getReactionsCount(userInDB, reactionsLimit);
-        const adminBlocks = getAdminBlock(isAdmin.user.is_admin);
         const newYears = transformDatesToBlocks(years);
         const newMonthes = transformDatesToBlocks(monthes);
-        const data = getSendKudosData(usersInDB, year, month, users.members);
+        const data = getSendKudosData(usersInDB, year, month, selectedUser);
+
+        const mainElements = getMainElements(isAdmin.user.is_admin, newYears, newMonthes, year, month, emoji)
 
         await client.views.publish({
             user_id: body.user.id,
@@ -797,52 +659,7 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                     {
                         "block_id": "select_action",
                         "type": "actions",
-                        "elements": [
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите kudos",
-                                    "emoji": true
-                                },
-                                "options": emodji,
-                                "action_id": "compliment_actionId-0"
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите год",
-                                    "emoji": true
-                                },
-                                "options": newYears,
-                                "action_id": "compliment_year_select",
-                                "initial_option": {
-                                    "value": String(year),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(year)
-                                    }
-                                }
-                            },
-                            {
-                                "type": "static_select",
-                                "placeholder": {
-                                    "type": "plain_text",
-                                    "text": "Выберите месяц",
-                                    "emoji": true
-                                },
-                                "options": newMonthes,
-                                "action_id": "compliment_month_select",
-                                "initial_option": {
-                                    "value": String(month),
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": String(month)
-                                    }
-                                }
-                            },
-                        ]
+                        "elements": mainElements
                     },
                     {
                         "type": "actions",
@@ -865,6 +682,16 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                                     "emoji": true
                                 },
                                 "action_id": "sended_kudos"
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Полученные Kudos",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "action_id": "get_user_info"
                             }
                         ] : [
                             {
@@ -879,7 +706,6 @@ app.action('sended_kudos', async ({ ack, client, body }) => {
                             }
                         ]
                     },
-                    ...adminBlocks,
                     ...(!data[0].fields.length ? [{
                         type: 'section',
                         text: {
