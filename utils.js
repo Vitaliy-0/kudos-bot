@@ -626,6 +626,9 @@ export const getSendKudosData = (users, year, month, selectedUser) => {
     let count = 0;
 
     if (!selectedUser) {
+        if (!users.some(us => us && us.reactions_added && us.reactions_added[year] && us.reactions_added[year][month])) {
+            return fields;
+        }
         users
             .sort((a, b) => {
                 let sumA = 0;
@@ -650,7 +653,6 @@ export const getSendKudosData = (users, year, month, selectedUser) => {
             })
             .forEach((user, i) => {
                 const summaryKudos = {};
-                if (!(user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month])) return fields;
                 if (user && user?.reactions_added && user?.reactions_added[year] && user?.reactions_added[year][month]) {
                     Object.keys(user.reactions_added[year][month]).forEach(day => {
                         Object.keys(user.reactions_added[year][month][day]).forEach(userId => {
