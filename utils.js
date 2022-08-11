@@ -21,7 +21,7 @@ export const getSum = (item) => {
 
 export const filterUsers = (users) => {
     return users.filter(user => {
-        if (user.is_bot || user.id === 'USLACKBOT') {
+        if (user.is_bot || user.id === 'USLACKBOT' || user.deleted) {
             return false;
         } else {
             return true;
