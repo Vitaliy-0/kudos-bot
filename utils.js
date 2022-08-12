@@ -662,7 +662,7 @@ export const getSendKudosData = (users, year, month, selectedUser) => {
                         })
                     });
                 }
-                if (fields[0].fields.length === 10) {
+                if (fields[count].fields.length === 10) {
                     fields.push({
                         type: 'section',
                         fields: []
@@ -705,7 +705,7 @@ export const getSendKudosData = (users, year, month, selectedUser) => {
             })
             .forEach((userId, i) => {
                 const user = users.find(u => u.id === userId);
-                if (fields[0].fields.length === 10) {
+                if (fields[count].fields.length === 10) {
                     fields.push({
                         type: 'section',
                         fields: []
