@@ -398,7 +398,7 @@ app.action('get_kudos', async ({ ack, client, body, action }) => {
                     },
                     getDataHead(user.is_admin),
                     ...shownInfo,
-                    getKudosCount(user.is_admin, usersInDB, year?.value || year, month?.value || month, reactionName)
+                    getKudosCount(user.is_admin, usersList, usersInDB, year?.value || year, month?.value || month, reactionName)
                 ]
             }
         })

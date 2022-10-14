@@ -30,7 +30,13 @@ export const filterUsers = (users) => {
 }
 
 const prepareData = (data, year, month, notSliced, usersList, adding) => {
-    const workedData = [...data];
+    const workedData = [...data].filter(user => {
+        const finded = usersList.members.find(us => us.id === user?.id)
+        if (finded.deleted) {
+            return false
+        }
+        return true
+    });
     filterUsers(usersList.members)
         .forEach(async user => {
             const exist = data.some(el => el?.id === user.id);
@@ -65,8 +71,16 @@ const prepareData = (data, year, month, notSliced, usersList, adding) => {
     }).slice(0, notSliced ? 1000 : 5)
 }
 
-const prepareDataWithReaction = (data, reaction, year, month, notSliced) => {
-    return data.filter(user => {
+const prepareDataWithReaction = (data, usersList, reaction, year, month, notSliced) => {
+    const workedData = [...data].filter(user => {
+        const finded = usersList?.members?.find(us => us?.id === user?.id);
+        if (finded?.deleted) {
+            return false
+        } else {
+            return true
+        }
+    })
+    return workedData.filter(user => {
         if (user?.reactions && user?.reactions[year] && user?.reactions[year][month]) {
             const isReaction = Object.keys(user?.reactions[year][month])
                 .some(key => Object.keys(user?.reactions[year][month][key]).includes(reaction))
@@ -171,7 +185,7 @@ export const transformDataFromDB2 = (data, usersList, reaction, year, month, not
             fields: []
         }];
         let count = 0;
-        prepareDataWithReaction(data, reaction, year, month, notSlice)
+        prepareDataWithReaction(data, usersList, reaction, year, month, notSlice)
             .map((user, idx) => {
 
                 const reactionsCount = Object.keys(user.reactions[year][month]).reduce((acc, key) => {
@@ -244,7 +258,7 @@ export const transformUserData = async (userInDB, usersInDB, usersList, year, mo
             ]
         }]
     } else {
-        const preparedData = prepareDataWithReaction(usersInDB, reactionName, year, month, true);
+        const preparedData = prepareDataWithReaction(usersInDB, usersList, reactionName, year, month, true);
         const sum = userInDB?.reactions && userInDB?.reactions[year] && userInDB?.reactions[year][month]
             && Object.keys(userInDB?.reactions[year][month]).reduce((acc, id) => {
                 acc += userInDB?.reactions[year][month][id][reactionName] || 0;
@@ -362,11 +376,18 @@ export const getDataHead = (admin) => {
     }
 }
 
-export const getKudosCount = (admin, usersInDB, year, month, reaction) => {
+export const getKudosCount = (admin, usersList, usersInDB, year, month, reaction) => {
     if (admin) {
+        const workedData = [...usersInDB].filter(user => {
+            const finded = usersList?.members?.find(us => us?.id === user?.id);
+            if (finded?.deleted) {
+                return false;
+            }
+            return true;
+        })
         let sum = 0;
         if (reaction) {
-            usersInDB.forEach(user => {
+            workedData.forEach(user => {
                 if (user.reactions && user.reactions[year] && user.reactions[year][month]) {
                     Object.keys(user.reactions[year][month]).forEach(key => {
                         if (user.reactions[year][month][key][reaction]) {
@@ -376,7 +397,7 @@ export const getKudosCount = (admin, usersInDB, year, month, reaction) => {
                 }
             })
         } else {
-            sum = usersInDB.filter(user => user.reactions && user.reactions[year] && user.reactions[year][month])
+            sum = workedData.filter(user => user.reactions && user.reactions[year] && user.reactions[year][month])
                 .reduce((acc, user) => {
                     acc += Object.keys(user.reactions[year][month]).reduce((sum, key) => {
                         sum += getSum(user.reactions[year][month][key])
@@ -556,7 +577,7 @@ export const getInfoAboutUser = (user, usersList, year, month, reaction) => {
                     }
                     arr[i].fields.push({
                         type: 'plain_text',
-                        text: `${count}. ${userByKey.real_name} (<@${userByKey.name}>)`
+                        text: userByKey.real_name ? `${count}. ${userByKey.real_name} (<@${userByKey.name}>)` : `${count}. <@${userByKey.name}>`
                     });
 
                     arr[i].fields.push({
