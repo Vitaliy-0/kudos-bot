@@ -963,7 +963,7 @@ async function trigger() {
     const day = date.getDate();
     const dayNumber = date.getDay();
 
-    if (hours === 13 && notification?.today !== day && dayNumber !== 6 && dayNumber !== 0) {
+    if (hours === 14 && notification?.today !== day && dayNumber !== 6 && dayNumber !== 0) {
         notification = {
             today: day
         }
